@@ -1,0 +1,1562 @@
+[
+  {
+    "difficulty": "EASY",
+    "text": "What is the primary purpose of stratification in survey sampling?",
+    "options": [
+      "To reduce the sample size required",
+      "To increase the precision of estimates",
+      "To ensure representation of all population subgroups",
+      "To simplify the data collection process"
+    ],
+    "correctIndex": 1,
+    "explanation": "Stratification increases the precision of estimates by ensuring that important subgroups are adequately represented.",
+    "domain": "NSTA-C1"
+  },
+  {
+    "difficulty": "EASY",
+    "text": "Which of the following is a feature of a multi-stage sampling design?",
+    "options": [
+      "All elements are sampled at once",
+      "Sampling is conducted in multiple phases",
+      "Only one stage of sampling is used",
+      "It is only applicable for large populations"
+    ],
+    "correctIndex": 1,
+    "explanation": "A multi-stage sampling design involves sampling in several distinct phases, allowing researchers to manage complexity and cost.",
+    "domain": "NSTA-C1"
+  },
+  {
+    "difficulty": "EASY",
+    "text": "In the context of sample size determination, what does the term 'margin of error' refer to?",
+    "options": [
+      "The maximum error tolerated in a survey estimate",
+      "The total number of respondents needed",
+      "The percentage of non-responses expected",
+      "The time taken to collect the sample data"
+    ],
+    "correctIndex": 0,
+    "explanation": "Margin of error refers to the maximum difference allowed between the survey estimate and the true population value, reflecting the precision of the estimate.",
+    "domain": "NSTA-C1"
+  },
+  {
+    "difficulty": "EASY",
+    "text": "What does PPS sampling stand for?",
+    "options": [
+      "Probability Proportional to Size",
+      "Past Population Sampling",
+      "Precision Probability Sampling",
+      "Proportional Population Surveying"
+    ],
+    "correctIndex": 0,
+    "explanation": "PPS stands for Probability Proportional to Size, a method where the probability of selecting a unit is proportional to its size.",
+    "domain": "NSTA-C1"
+  },
+  {
+    "difficulty": "EASY",
+    "text": "Which of the following is a disadvantage of simple random sampling?",
+    "options": [
+      "It is easy to implement",
+      "It can lead to biased estimates",
+      "It requires a complete list of the population",
+      "It ensures equal representation of all groups"
+    ],
+    "correctIndex": 2,
+    "explanation": "Simple random sampling requires a complete list of the population, which can be difficult or impossible in large-scale surveys.",
+    "domain": "NSTA-C1"
+  },
+  {
+    "difficulty": "MODERATE",
+    "text": "In multi-stage sampling, the primary sampling units (PSUs) are typically selected first. What is the subsequent step in this design?",
+    "options": [
+      "Select all units within each PSU",
+      "Select a random sample from each PSU",
+      "Select sub-units within the PSUs",
+      "Select units from the entire population again"
+    ],
+    "correctIndex": 2,
+    "explanation": "In multi-stage sampling, after selecting PSUs, researchers typically select sub-units within each PSU for further analysis.",
+    "domain": "NSTA-C1"
+  },
+  {
+    "difficulty": "MODERATE",
+    "text": "When designing a survey, what is the primary advantage of using stratified sampling over simple random sampling?",
+    "options": [
+      "Lower costs",
+      "Simpler implementation",
+      "Increased reliability of results",
+      "Easier analysis of data"
+    ],
+    "correctIndex": 2,
+    "explanation": "Stratified sampling increases the reliability of results by ensuring that specific subgroups are adequately represented in the sample.",
+    "domain": "NSTA-C1"
+  },
+  {
+    "difficulty": "MODERATE",
+    "text": "In a large-scale survey, how does increasing the sample size affect the variance of the estimate?",
+    "options": [
+      "Variance increases",
+      "Variance decreases",
+      "Variance remains the same",
+      "It depends on the population structure"
+    ],
+    "correctIndex": 1,
+    "explanation": "Increasing the sample size generally decreases the variance of the estimate, leading to more precise results.",
+    "domain": "NSTA-C1"
+  },
+  {
+    "difficulty": "MODERATE",
+    "text": "What is the main criterion for choosing sampling intervals in systematic sampling?",
+    "options": [
+      "Randomness of selection",
+      "Uniformity of the population",
+      "Size of each subgroup",
+      "The sampling frame size"
+    ],
+    "correctIndex": 3,
+    "explanation": "The main criterion for choosing sampling intervals in systematic sampling is the size of the sampling frame, which dictates how spaced out the sample selections will be.",
+    "domain": "NSTA-C1"
+  },
+  {
+    "difficulty": "MODERATE",
+    "text": "In stratified sampling, how is the allocation of sample sizes to strata commonly determined?",
+    "options": [
+      "Equal allocation",
+      "Proportional allocation",
+      "Random allocation",
+      "Convenience allocation"
+    ],
+    "correctIndex": 1,
+    "explanation": "In stratified sampling, proportional allocation allocates sample sizes to different strata based on their size relative to the total population.",
+    "domain": "NSTA-C1"
+  },
+  {
+    "difficulty": "HARD",
+    "text": "When conducting a survey using stratified sampling, how can one estimate the variance of an estimate from each stratum?",
+    "options": [
+      "Using the total sample size only",
+      "Adding stratum variances together",
+      "Calculating the weighted average of variances",
+      "Ignoring the size of each stratum"
+    ],
+    "correctIndex": 2,
+    "explanation": "The variance of an estimate from each stratum can be estimated by calculating the weighted average of variances, reflecting the sizes of the strata.",
+    "domain": "NSTA-C1"
+  },
+  {
+    "difficulty": "HARD",
+    "text": "In a complex survey design involving cluster sampling, what effect does clustering have on the design effect?",
+    "options": [
+      "It always reduces the design effect",
+      "It has no impact on the design effect",
+      "It generally increases the design effect",
+      "It is only relevant to simple random sampling"
+    ],
+    "correctIndex": 2,
+    "explanation": "Clustering generally increases the design effect because it introduces intra-cluster correlation, which can lead to less precise estimates.",
+    "domain": "NSTA-C1"
+  },
+  {
+    "difficulty": "HARD",
+    "text": "What statistical method is used to adjust for unequal probabilities in PPS sampling when estimating population totals?",
+    "options": [
+      "Stratification adjustments",
+      "Weighting factors",
+      "Variance inflation",
+      "Bootstrapping"
+    ],
+    "correctIndex": 1,
+    "explanation": "Weighting factors are used to adjust for unequal probabilities in PPS sampling, allowing for accurate population total estimates.",
+    "domain": "NSTA-C1"
+  },
+  {
+    "difficulty": "HARD",
+    "text": "In survey design, what is the primary impact of using a fixed sample size in a multi-stage design where variances vary across PSUs?",
+    "options": [
+      "Uniform representation across strata",
+      "Increased overall sample variance",
+      "Reduced data collection costs",
+      "Simplified analysis of findings"
+    ],
+    "correctIndex": 1,
+    "explanation": "Using a fixed sample size in a multi-stage design with varying variances can lead to increased overall sample variance, as some PSUs may contribute less effective information.",
+    "domain": "NSTA-C1"
+  },
+  {
+    "difficulty": "HARD",
+    "text": "In a stratified random sampling approach, how can the optimal sample size for each stratum be calculated?",
+    "options": [
+      "Using a simple average of stratum sizes",
+      "Based on the total population only",
+      "With desired margin of error and estimated variance in each stratum",
+      "By allocating equal sizes to each stratum regardless of variance"
+    ],
+    "correctIndex": 2,
+    "explanation": "The optimal sample size for each stratum can be calculated using the desired margin of error and the estimated variance within each stratum, ensuring efficiency and accuracy.",
+    "domain": "NSTA-C1"
+  },
+  {
+    "difficulty": "EASY",
+    "text": "What is the primary goal of non-response treatment in surveys conducted by the NSSO?",
+    "options": [
+      "To analyze the data collected",
+      "To increase the sample size",
+      "To minimize bias in estimates",
+      "To improve fieldwork quality"
+    ],
+    "correctIndex": 2,
+    "explanation": "The primary goal of non-response treatment is to minimize bias in estimates by addressing the effects of missing data.",
+    "domain": "NSTA-C2"
+  },
+  {
+    "difficulty": "EASY",
+    "text": "Which of the following methods is commonly used for handling missing responses in survey data?",
+    "options": [
+      "Weighting adjustments",
+      "Imputation methods",
+      "Case deletion",
+      "All of the above"
+    ],
+    "correctIndex": 1,
+    "explanation": "Imputation methods involve filling in missing data points to maintain the integrity of the dataset.",
+    "domain": "NSTA-C2"
+  },
+  {
+    "difficulty": "EASY",
+    "text": "In the context of response homogeneity groups, what is the purpose of forming these groups?",
+    "options": [
+      "To increase response rates",
+      "To stratify data for analysis",
+      "To ensure uniformity in survey instruments",
+      "To identify non-sampling errors"
+    ],
+    "correctIndex": 1,
+    "explanation": "Response homogeneity groups are formed to ensure statistical analysis can be stratified effectively, addressing differences in response behavior.",
+    "domain": "NSTA-C2"
+  },
+  {
+    "difficulty": "EASY",
+    "text": "What does the term 'casualty handling' refer to in the context of field surveys?",
+    "options": [
+      "Respondents refusing to participate",
+      "Surveys that cannot be completed due to various issues",
+      "Data processing errors",
+      "Monitoring of enumerator performance"
+    ],
+    "correctIndex": 1,
+    "explanation": "'Casualty handling' refers to the treatment of households that could not be surveyed for various reasons, ensuring that the impact on estimates is managed.",
+    "domain": "NSTA-C2"
+  },
+  {
+    "difficulty": "EASY",
+    "text": "During field supervision, what is a critical aspect to ensure quality checks are effective?",
+    "options": [
+      "Sample size calculations",
+      "Randomization techniques",
+      "Enumerator training and adherence to protocols",
+      "Use of technology in data collection"
+    ],
+    "correctIndex": 2,
+    "explanation": "Enumerator training and adherence to protocols are crucial for ensuring quality in data collection and response integrity.",
+    "domain": "NSTA-C2"
+  },
+  {
+    "difficulty": "MODERATE",
+    "text": "If a specific demographic group exhibits lower response rates, what is the best approach to ensure their inclusion in the analysis?",
+    "options": [
+      "Skip their responses in analysis",
+      "Adjust the sample design to oversample this group",
+      "Use imputation methods for missing data",
+      "Focus on other groups with higher response rates"
+    ],
+    "correctIndex": 1,
+    "explanation": "Adjusting the sample design to oversample the demographic group helps mitigate the risk of bias and ensures their representation in analysis.",
+    "domain": "NSTA-C2"
+  },
+  {
+    "difficulty": "MODERATE",
+    "text": "In a survey, what is the risk of not conducting follow-up visits to non-responding households?",
+    "options": [
+      "Increased data collection costs",
+      "Impact on the accuracy of outcomes",
+      "Stronger community relations",
+      "Reduced survey duration"
+    ],
+    "correctIndex": 1,
+    "explanation": "Not conducting follow-up visits can lead to increased bias and reduced accuracy in the survey outcomes due to unaddressed non-responses.",
+    "domain": "NSTA-C2"
+  },
+  {
+    "difficulty": "MODERATE",
+    "text": "What is the role of field supervisors in maintaining data quality during surveys?",
+    "options": [
+      "Conduct data entry",
+      "Analyze survey results",
+      "Monitor and support enumerators",
+      "Develop survey instruments"
+    ],
+    "correctIndex": 2,
+    "explanation": "Field supervisors play a critical role in monitoring and supporting enumerators, which directly impacts data quality.",
+    "domain": "NSTA-C2"
+  },
+  {
+    "difficulty": "MODERATE",
+    "text": "How can response bias be evaluated in a survey dataset?",
+    "options": [
+      "Using regression analysis only",
+      "Employing statistical weighting techniques only",
+      "Comparing response rates between different groups",
+      "Analyzing the time spent on data collection"
+    ],
+    "correctIndex": 2,
+    "explanation": "Comparing response rates between different demographic or thematic groups can help identify potential biases in survey responses.",
+    "domain": "NSTA-C2"
+  },
+  {
+    "difficulty": "MODERATE",
+    "text": "What is the major consequence of high levels of unit non-response in a survey?",
+    "options": [
+      "Reduced operational costs",
+      "Increased accuracy of data",
+      "Potential non-representation of the population",
+      "Improved clarity in survey objectives"
+    ],
+    "correctIndex": 2,
+    "explanation": "High levels of unit non-response can lead to significant concerns regarding the representativeness of the survey results.",
+    "domain": "NSTA-C2"
+  },
+  {
+    "difficulty": "HARD",
+    "text": "When conducting field quality checks, which method can be used to objectively evaluate enumerator performance?",
+    "options": [
+      "Cross-checking with response homogeneity groups",
+      "Spot checks of completed surveys",
+      "Comparative analysis with historical data",
+      "Survey design revisions"
+    ],
+    "correctIndex": 1,
+    "explanation": "Spot checks of completed surveys serve as an effective method to objectively assess enumerator performance and adherence to procedures.",
+    "domain": "NSTA-C2"
+  },
+  {
+    "difficulty": "HARD",
+    "text": "In a context of high response heterogeneity, what analysis technique is best suited for identifying and addressing significant response differences?",
+    "options": [
+      "Frequency distribution analysis",
+      "Multivariate regression analysis",
+      "Simple descriptive statistics",
+      "Visual data representation"
+    ],
+    "correctIndex": 1,
+    "explanation": "Multivariate regression analysis is best suited for understanding and addressing significant differences in responses across diverse groups.",
+    "domain": "NSTA-C2"
+  },
+  {
+    "difficulty": "HARD",
+    "text": "How can the impact of sampling error be differentiated from non-sampling error in survey results?",
+    "options": [
+      "By conducting post-survey interviews",
+      "By using complex statistical models",
+      "By employing control groups in future surveys",
+      "By examining response patterns and consistency in different datasets"
+    ],
+    "correctIndex": 3,
+    "explanation": "Examining response patterns and consistency in different datasets aids in distinguishing the impacts of sampling versus non-sampling errors.",
+    "domain": "NSTA-C2"
+  },
+  {
+    "difficulty": "HARD",
+    "text": "If data indicates that certain areas consistently have higher non-response rates, what should the statistical analyst do next?",
+    "options": [
+      "Ignore these data points",
+      "Increase the survey sample size in those areas",
+      "Investigate reasons for non-response and adapt strategy",
+      "Focus on areas with the highest response rates"
+    ],
+    "correctIndex": 2,
+    "explanation": "Investigating the reasons for non-response in those areas allows for a targeted adjustment in strategies to improve data collection.",
+    "domain": "NSTA-C2"
+  },
+  {
+    "difficulty": "HARD",
+    "text": "In terms of field supervision, what kind of corrective measures can support the quality of data collection when inconsistencies are observed across different enumerators?",
+    "options": [
+      "Standardize the questionnaire for all enumerators",
+      "Use advanced technology tools only",
+      "Provide targeted retraining and feedback sessions",
+      "Reassign field autonomy to experienced enumerators"
+    ],
+    "correctIndex": 3,
+    "explanation": "Providing targeted retraining and feedback sessions supports consistent data collection quality by addressing specific enumerator challenges.",
+    "domain": "NSTA-C2"
+  },
+  {
+    "difficulty": "EASY",
+    "text": "Which of the following is included in the production boundary of National Accounts statistics in India?",
+    "options": [
+      "Household production for own consumption",
+      "Illegal economic activities",
+      "Transfer payments",
+      "Environmental degradation"
+    ],
+    "correctIndex": 0,
+    "explanation": "Household production for own consumption is included as it contributes to the economic value produced.",
+    "domain": "NSTA-C3"
+  },
+  {
+    "difficulty": "EASY",
+    "text": "What is the primary measure of economic performance used in National Accounts?",
+    "options": [
+      "Net Domestic Product (NDP)",
+      "Gross Domestic Product (GDP)",
+      "Net National Income (NNI)",
+      "Gross National Product (GNP)"
+    ],
+    "correctIndex": 1,
+    "explanation": "Gross Domestic Product (GDP) is the primary measure for assessing economic performance.",
+    "domain": "NSTA-C3"
+  },
+  {
+    "difficulty": "EASY",
+    "text": "Which component is NOT included in the calculation of Gross Value Added?",
+    "options": [
+      "Consumption of fixed capital",
+      "Taxes on products",
+      "Subsidies",
+      "Wages and salaries"
+    ],
+    "correctIndex": 0,
+    "explanation": "Consumption of fixed capital is an adjustment and not a component in GVA calculation.",
+    "domain": "NSTA-C3"
+  },
+  {
+    "difficulty": "EASY",
+    "text": "Which of the following best describes the concept of 'value added' in the context of GVA?",
+    "options": [
+      "Value of final goods",
+      "Total sales revenue",
+      "Revenue minus intermediate consumption",
+      "Total profits earned"
+    ],
+    "correctIndex": 2,
+    "explanation": "Value added is defined as revenue minus intermediate consumption, reflecting the contribution to production.",
+    "domain": "NSTA-C3"
+  },
+  {
+    "difficulty": "EASY",
+    "text": "The deflator used to convert nominal GVA to real GVA is typically based on which of the following?",
+    "options": [
+      "Consumer Price Index (CPI)",
+      "Wholesale Price Index (WPI)",
+      "GDP deflator",
+      "Production Price Index"
+    ],
+    "correctIndex": 1,
+    "explanation": "The Wholesale Price Index (WPI) is commonly used to deflate nominal GVA to real terms.",
+    "domain": "NSTA-C3"
+  },
+  {
+    "difficulty": "MODERATE",
+    "text": "Which statistical method is commonly used to estimate the GVA of informal sectors where reliable data may be scarce?",
+    "options": [
+      "Direct industry surveys",
+      "Input-output tables",
+      "Proxy indicators",
+      "Satellite accounts"
+    ],
+    "correctIndex": 2,
+    "explanation": "Proxy indicators are often used to estimate GVA in informal sectors where direct data collection is challenging.",
+    "domain": "NSTA-C3"
+  },
+  {
+    "difficulty": "MODERATE",
+    "text": "In the context of base-year revision, why is it important to update the weights in a GVA compilation?",
+    "options": [
+      "To reflect seasonal variations",
+      "To align with changes in population",
+      "To account for changes in consumption patterns",
+      "To simply increase statistical output"
+    ],
+    "correctIndex": 2,
+    "explanation": "Updating weights in GVA compilation reflects changes in consumption patterns, ensuring accuracy.",
+    "domain": "NSTA-C3"
+  },
+  {
+    "difficulty": "MODERATE",
+    "text": "What is the significance of the 'availability of data' in constructing deflators for National Accounts?",
+    "options": [
+      "Affects the choice of base year",
+      "Determines the reliability of economic indicators",
+      "Influences the methods of GVA compilation",
+      "Impacts the calculation of GDP"
+    ],
+    "correctIndex": 1,
+    "explanation": "The availability of data is crucial as it determines the reliability of economic indicators used in deflator construction.",
+    "domain": "NSTA-C3"
+  },
+  {
+    "difficulty": "MODERATE",
+    "text": "For the purposes of GVA calculation, which of the following is treated as an intermediate consumption in the production process?",
+    "options": [
+      "Raw materials",
+      "Labor costs",
+      "Fixed assets",
+      "R&D expenditure"
+    ],
+    "correctIndex": 0,
+    "explanation": "Raw materials are classified as intermediate consumption as they are used in the production of final goods.",
+    "domain": "NSTA-C3"
+  },
+  {
+    "difficulty": "MODERATE",
+    "text": "What is the impact of a negative deflator in economic terms when applied to GVA?",
+    "options": [
+      "Indicates economic growth",
+      "Represents increasing prices",
+      "Suggests a contraction in real output",
+      "Means rising employment levels"
+    ],
+    "correctIndex": 2,
+    "explanation": "A negative deflator suggests a contraction in real output, meaning nominal output decreased relative to prices.",
+    "domain": "NSTA-C3"
+  },
+  {
+    "difficulty": "HARD",
+    "text": "In cases where direct data for GVA calculation is unavailable, which approach is most robust for estimating GVA in the construction sector?",
+    "options": [
+      "Volume of construction permits issued",
+      "Method of least squares regression",
+      "Use of gross fixed capital formation",
+      "Surveys of labor input"
+    ],
+    "correctIndex": 2,
+    "explanation": "Using gross fixed capital formation is robust as it directly correlates to investment in the construction sector.",
+    "domain": "NSTA-C3"
+  },
+  {
+    "difficulty": "HARD",
+    "text": "When adjusting GVA for price changes, which method provides the most accurate measure for specific industries rather than an overall economy?",
+    "options": [
+      "Chain price indices",
+      "Laspeyres index",
+      "Paasche index",
+      "Expenditure approach"
+    ],
+    "correctIndex": 0,
+    "explanation": "Chain price indices provide accurate measures tailored to specific industries by accounting for relative price changes over time.",
+    "domain": "NSTA-C3"
+  },
+  {
+    "difficulty": "HARD",
+    "text": "In GVA compilation, what is the major limitation of using a consumption-based approach as opposed to a production-based approach?",
+    "options": [
+      "Underestimation of output",
+      "Overestimation of intermediate consumption",
+      "Difficulty in capturing value added",
+      "Lack of comprehensive data"
+    ],
+    "correctIndex": 0,
+    "explanation": "A consumption-based approach may lead to underestimation of output as it relies on the consumption patterns rather than direct production data.",
+    "domain": "NSTA-C3"
+  },
+  {
+    "difficulty": "HARD",
+    "text": "For calculating GVA for agriculture, which factor is MOST critical when adjusting for variations in output due to climatic conditions?",
+    "options": [
+      "Historical data on past yields",
+      "Statistical adjustment for area sown",
+      "Use of uniform prices across seasons",
+      "Estimations of input costs"
+    ],
+    "correctIndex": 1,
+    "explanation": "Statistical adjustment for area sown is critical as it allows for accurate estimates despite variations in output caused by climate.",
+    "domain": "NSTA-C3"
+  },
+  {
+    "difficulty": "HARD",
+    "text": "When conducting a base-year revision of GVA, which would be considered the least reliable data source for current economic conditions?",
+    "options": [
+      "Consumer expenditure surveys",
+      "Firm-level financial reports",
+      "Tax data from revenue authorities",
+      "Historical data from national accounts"
+    ],
+    "correctIndex": 3,
+    "explanation": "Historical data from national accounts may not accurately reflect current economic conditions due to structural changes over time.",
+    "domain": "NSTA-C3"
+  },
+  {
+    "difficulty": "EASY",
+    "text": "What does CPI stand for in the context of price statistics in India?",
+    "options": [
+      "Consumer Price Index",
+      "Cost Price Index",
+      "Current Price Index",
+      "Cumulative Price Index"
+    ],
+    "correctIndex": 0,
+    "explanation": "CPI stands for Consumer Price Index, which measures the average change over time in the prices paid by consumers for a market basket of goods and services.",
+    "domain": "NSTA-C4"
+  },
+  {
+    "difficulty": "EASY",
+    "text": "Which of the following is a common method for collecting prices for the CPI in India?",
+    "options": [
+      "Web scraping",
+      "Telephone interviews",
+      "Surveys at specific outlets",
+      "Mail-in questionnaires"
+    ],
+    "correctIndex": 2,
+    "explanation": "The CPI in India commonly collects prices through surveys at specific outlets to ensure accurate and local pricing data.",
+    "domain": "NSTA-C4"
+  },
+  {
+    "difficulty": "EASY",
+    "text": "What is the purpose of weighting in index number construction?",
+    "options": [
+      "To ignore rare items",
+      "To give more importance to certain items",
+      "To simplify computations",
+      "To change the base year"
+    ],
+    "correctIndex": 1,
+    "explanation": "Weighting in index number construction gives more importance to certain items based on their share in consumer expenditure, ensuring a more accurate representation of overall price changes.",
+    "domain": "NSTA-C4"
+  },
+  {
+    "difficulty": "EASY",
+    "text": "In the context of the WPI, which category typically has the highest weight?",
+    "options": [
+      "Manufactured products",
+      "Primary articles",
+      "Fuel and power",
+      "Services"
+    ],
+    "correctIndex": 0,
+    "explanation": "In the WPI, manufactured products generally hold the highest weight due to their significant contribution to the overall economy.",
+    "domain": "NSTA-C4"
+  },
+  {
+    "difficulty": "EASY",
+    "text": "The Laspeyres Index uses which of the following as a base for calculating price changes?",
+    "options": [
+      "Current year prices",
+      "Fixed base year quantities",
+      "Moving average prices",
+      "Shifting base year prices"
+    ],
+    "correctIndex": 1,
+    "explanation": "The Laspeyres Index uses fixed base year quantities to calculate price changes, thus maintaining a consistent expenditure pattern.",
+    "domain": "NSTA-C4"
+  },
+  {
+    "difficulty": "MODERATE",
+    "text": "To revise the weights in the CPI, the National Statistical Office (NSO) typically refers to which survey?",
+    "options": [
+      "National Sample Survey (NSS)",
+      "Consumer Expenditure Survey (CES)",
+      "Annual Survey of Industries (ASI)",
+      "Household Income Survey (HIS)"
+    ],
+    "correctIndex": 1,
+    "explanation": "The Consumer Expenditure Survey (CES) is used by the NSO to revise weights in the CPI, reflecting changes in consumer spending patterns.",
+    "domain": "NSTA-C4"
+  },
+  {
+    "difficulty": "MODERATE",
+    "text": "Which of the following statements correctly aligns with the chain-weighted index method?",
+    "options": [
+      "It fixes the base year for all calculations.",
+      "It adjusts weights annually based on expenditure changes.",
+      "It ignores new products in the basket.",
+      "It is less responsive to consumer behavior."
+    ],
+    "correctIndex": 1,
+    "explanation": "The chain-weighted index method adjusts weights annually based on changes in expenditure, providing a more responsive measure of price changes.",
+    "domain": "NSTA-C4"
+  },
+  {
+    "difficulty": "MODERATE",
+    "text": "What is a key limitation of using the Paasche Index for calculating price changes?",
+    "options": [
+      "It uses fixed base year quantities.",
+      "It may underestimate current price increases.",
+      "It cannot accommodate new goods.",
+      "It is based on historical data only."
+    ],
+    "correctIndex": 1,
+    "explanation": "The Paasche Index may underestimate current price increases because it uses current quantities, hence reflecting substitution effects in consumer behavior.",
+    "domain": "NSTA-C4"
+  },
+  {
+    "difficulty": "MODERATE",
+    "text": "When collecting price data for the CPI, what is the primary criterion for selecting retail outlets?",
+    "options": [
+      "Proximity to census locations",
+      "Sales volume and representation",
+      "Type of ownership",
+      "Number of employees"
+    ],
+    "correctIndex": 1,
+    "explanation": "Retail outlets for CPI data collection are primarily selected based on their sales volume and representation to ensure a comprehensive price capture.",
+    "domain": "NSTA-C4"
+  },
+  {
+    "difficulty": "MODERATE",
+    "text": "Which of the following indices is most suitable for measuring inflation experienced by urban consumers in India?",
+    "options": [
+      "WPI",
+      "CPI (Rural)",
+      "CPI (Urban)",
+      "GDP Deflator"
+    ],
+    "correctIndex": 2,
+    "explanation": "The CPI (Urban) is specifically designed to measure inflation experienced by urban consumers, capturing relevant price changes they encounter.",
+    "domain": "NSTA-C4"
+  },
+  {
+    "difficulty": "HARD",
+    "text": "In scenarios where a new product replaces a discontinued one in the CPI basket, which adjustment technique is applied?",
+    "options": [
+      "Substitution method",
+      "Collective averaging",
+      "Quality adjustment",
+      "Base year recalibration"
+    ],
+    "correctIndex": 0,
+    "explanation": "The substitution method is applied to account for new products replacing discontinued ones in the CPI basket, ensuring continuity in the index.",
+    "domain": "NSTA-C4"
+  },
+  {
+    "difficulty": "HARD",
+    "text": "A significant change in technology results in lower production costs and prices for several goods. As a price statistician, which approach should you take for the index calculation?",
+    "options": [
+      "Ignore the technological impact",
+      "Use adjusted base prices",
+      "Incorporate quality improvements",
+      "Limit exposure to these goods"
+    ],
+    "correctIndex": 2,
+    "explanation": "Incorporating quality improvements is essential to accurately reflect the impact of technology on prices, ensuring the index remains relevant and accurate.",
+    "domain": "NSTA-C4"
+  },
+  {
+    "difficulty": "HARD",
+    "text": "When applying the geometric mean in CPI calculations, what aspect does it specifically address in regards to consumer behavior?",
+    "options": [
+      "Heterogeneity in consumption patterns",
+      "Exclusivity of essential goods",
+      "Uniformity in price changes",
+      "Temporal stability of prices"
+    ],
+    "correctIndex": 0,
+    "explanation": "The geometric mean in CPI calculations addresses heterogeneity in consumption patterns, providing a more equitable representation of diverse consumer preferences.",
+    "domain": "NSTA-C4"
+  },
+  {
+    "difficulty": "HARD",
+    "text": "For a specific commodity class, suppose the price rises sharply but market availability remains stable. What should you cautiously consider about the index calculation methodology?",
+    "options": [
+      "Retain the previous weight indefinitely",
+      "Adjust the index to reflect consumer scarcity",
+      "Verify supply chain disruptions",
+      "Implement a volume correction factor"
+    ],
+    "correctIndex": 3,
+    "explanation": "Implementing a volume correction factor is essential in such scenarios to accurately reflect changes in price relative to the actual volume of goods available.",
+    "domain": "NSTA-C4"
+  },
+  {
+    "difficulty": "HARD",
+    "text": "In cases of seasonal price fluctuations for agricultural products, what methodological adjustment is recommended for accurate CPI measurement?",
+    "options": [
+      "Utility function adjustment",
+      "Seasonal adjustment",
+      "Quarterly re-evaluation",
+      "Price smoothing over years"
+    ],
+    "correctIndex": 1,
+    "explanation": "Seasonal adjustment is recommended to accurately measure CPI, allowing for a clearer understanding of underlying price trends by accounting for regular seasonal variations.",
+    "domain": "NSTA-C4"
+  },
+  {
+    "difficulty": "EASY",
+    "text": "Which of the following indicators is classified as Tier I in the SDG framework?",
+    "options": [
+      "Percentage of population living below the national poverty line",
+      "Proportion of seats held by women in national parliaments",
+      "Number of new HIV infections per 1,000 uninfected population",
+      "Mortality rate attributed to cardiovascular disease"
+    ],
+    "correctIndex": 1,
+    "explanation": "Proportion of seats held by women in national parliaments is a Tier I indicator as it is regularly produced by over 90% of countries.",
+    "domain": "NSTA-C5"
+  },
+  {
+    "difficulty": "EASY",
+    "text": "What is the main role of a custodian agency in the context of the SDG indicator framework?",
+    "options": [
+      "Collecting primary data for all SDGs",
+      "Providing technical support and guidance for data collection and reporting",
+      "Assigning tier classifications to indicators",
+      "Developing national strategies for SDG implementation"
+    ],
+    "correctIndex": 1,
+    "explanation": "Custodian agencies provide technical support and guidance for data collection and reporting related to specific SDG indicators.",
+    "domain": "NSTA-C5"
+  },
+  {
+    "difficulty": "EASY",
+    "text": "Which of the following is a key purpose of national metadata reporting templates in the context of SDG indicators?",
+    "options": [
+      "To report financial contributions to SDG initiatives",
+      "To standardize data reporting and enhance comparability",
+      "To assess the performance of custodian agencies",
+      "To promote public understanding of SDG goals"
+    ],
+    "correctIndex": 1,
+    "explanation": "National metadata reporting templates aim to standardize data reporting and enhance comparability across different jurisdictions.",
+    "domain": "NSTA-C5"
+  },
+  {
+    "difficulty": "EASY",
+    "text": "Which of the following bodies is responsible for overseeing the implementation of the SDG framework in India?",
+    "options": [
+      "The Planning Commission",
+      "The Ministry of Statistics and Programme Implementation (MoSPI)",
+      "The Reserve Bank of India",
+      "The National Statistical Commission"
+    ],
+    "correctIndex": 1,
+    "explanation": "The Ministry of Statistics and Programme Implementation (MoSPI) is responsible for overseeing the implementation of the SDG framework in India.",
+    "domain": "NSTA-C5"
+  },
+  {
+    "difficulty": "EASY",
+    "text": "In the context of the SDG framework, what does Tier III classification signify?",
+    "options": [
+      "Indicator is regularly produced and available",
+      "Indicator is established but lacks data for regular production",
+      "Indicator is not defined as SDG relevant",
+      "Indicator is frequently reported by multiple countries"
+    ],
+    "correctIndex": 1,
+    "explanation": "Tier III classification signifies that the indicator is established but lacks data for regular production.",
+    "domain": "NSTA-C5"
+  },
+  {
+    "difficulty": "MODERATE",
+    "text": "What does the term 'data disaggregation' refer to in the context of SDG indicators?",
+    "options": [
+      "Breaking down data by specific demographics or geographies",
+      "Collecting data from multiple sources",
+      "Combining different types of data into a single report",
+      "Conforming data to international standards"
+    ],
+    "correctIndex": 0,
+    "explanation": "Data disaggregation refers to breaking down data by specific demographics or geographies to provide a more detailed understanding of the indicator.",
+    "domain": "NSTA-C5"
+  },
+  {
+    "difficulty": "MODERATE",
+    "text": "Which of the following best describes the importance of indicators classified as Tier II?",
+    "options": [
+      "They require further refinement and testing before they can be officially adopted",
+      "They are available but not regularly collected across countries",
+      "They are the primary indicators for tracking global SDG progress",
+      "They have been established and are used but need improvement in data availability"
+    ],
+    "correctIndex": 3,
+    "explanation": "Tier II indicators have been established and are used but there may be challenges with data availability across countries.",
+    "domain": "NSTA-C5"
+  },
+  {
+    "difficulty": "MODERATE",
+    "text": "In the context of SDG metadata, what is the significance of 'metadata dimensions'?",
+    "options": [
+      "They provide a list of all data sources used in the report",
+      "They detail the definitions, methodologies, and data quality assessments",
+      "They outline the financial implications of each indicator",
+      "They summarize annual progress reports for each SDG goal"
+    ],
+    "correctIndex": 1,
+    "explanation": "Metadata dimensions detail the definitions, methodologies, and data quality assessments relevant to each indicator.",
+    "domain": "NSTA-C5"
+  },
+  {
+    "difficulty": "MODERATE",
+    "text": "Why is the integration of local data sources critical for reporting on SDG indicators in India?",
+    "options": [
+      "Local data provides anecdotal evidence for SDG narratives",
+      "Local data sources are more reliable than national datasets",
+      "Local data reflects regional disparities and contextual realities",
+      "Local data is preferred by international organizations"
+    ],
+    "correctIndex": 2,
+    "explanation": "Integrating local data sources is critical as it reflects regional disparities and the specific contextual realities necessary for accurate reporting.",
+    "domain": "NSTA-C5"
+  },
+  {
+    "difficulty": "MODERATE",
+    "text": "What is a primary function of the National Statistical Commission (NSC) in relation to the SDG indicator framework?",
+    "options": [
+      "To determine funding allocations for statistical projects",
+      "To monitor and improve the quality of official statistics in India",
+      "To publish annual reports on SDG progress",
+      "To collaborate with international agencies for data collection"
+    ],
+    "correctIndex": 1,
+    "explanation": "The NSC's primary function is to monitor and improve the quality of official statistics, including those relevant to the SDG framework.",
+    "domain": "NSTA-C5"
+  },
+  {
+    "difficulty": "HARD",
+    "text": "When evaluating a Tier II SDG indicator for national reporting, which of the following is a critical aspect to assess?",
+    "options": [
+      "The annual budget allocated for the indicator",
+      "The availability of a comprehensive data collection strategy",
+      "The engagement of international stakeholders in data gathering",
+      "The historical significance of the indicator in national policies"
+    ],
+    "correctIndex": 1,
+    "explanation": "For national reporting on a Tier II indicator, it is critical to assess the availability of a comprehensive data collection strategy to ensure reliable reporting.",
+    "domain": "NSTA-C5"
+  },
+  {
+    "difficulty": "HARD",
+    "text": "In the context of SDG implementation, which challenges might arise when coordinating between various custodian agencies and national statistical offices?",
+    "options": [
+      "Conflicts in funding priorities",
+      "Diverse definitions and methodologies for indicators",
+      "Lack of interest from government officials",
+      "Inadequate infrastructure for data collection"
+    ],
+    "correctIndex": 1,
+    "explanation": "Diverse definitions and methodologies for indicators among custodian agencies and national statistical offices can create challenges in coordination for effective SDG reporting.",
+    "domain": "NSTA-C5"
+  },
+  {
+    "difficulty": "HARD",
+    "text": "How can the application of machine learning techniques potentially enhance the reporting of SDG indicators?",
+    "options": [
+      "By standardizing all data inputs",
+      "By predicting future trends based on historical data",
+      "By fully automating data collection processes",
+      "By minimizing human error in statistical reports"
+    ],
+    "correctIndex": 1,
+    "explanation": "Machine learning techniques can enhance reporting by analyzing large datasets and predicting future trends, helping in the proactive management of SDG-related issues.",
+    "domain": "NSTA-C5"
+  },
+  {
+    "difficulty": "HARD",
+    "text": "What would be a key consideration for India when adapting global SDG indicators to fit national data contexts?",
+    "options": [
+      "International donor preferences",
+      "Political implications of indicator definitions",
+      "Cultural relevance of indicators to local populations",
+      "Technical feasibility of data collection methods"
+    ],
+    "correctIndex": 3,
+    "explanation": "Technical feasibility of data collection methods is a key consideration to ensure that the adapted indicators can be reliably measured and reported at the national level.",
+    "domain": "NSTA-C5"
+  },
+  {
+    "difficulty": "HARD",
+    "text": "Which methodological approach is often advocated to ensure credible reporting of SDG indicators at the national level?",
+    "options": [
+      "Simple random sampling",
+      "Participatory monitoring and evaluation",
+      "Budget-based performance metrics",
+      "Top-down data collection techniques"
+    ],
+    "correctIndex": 1,
+    "explanation": "Participatory monitoring and evaluation is often advocated as it involves multiple stakeholders and fosters credibility in reporting SDG indicators.",
+    "domain": "NSTA-C5"
+  },
+  {
+    "difficulty": "EASY",
+    "text": "What is the primary purpose of using the 'dplyr' package in R for data manipulation in statistical analysis?",
+    "options": [
+      "To create interactive visualizations",
+      "To perform basic statistical modeling",
+      "To streamline data transformation and manipulation",
+      "To enhance data storage capabilities"
+    ],
+    "correctIndex": 2,
+    "explanation": "The 'dplyr' package in R is designed to simplify and enhance data transformation and manipulation, making it easier to work with data frames.",
+    "domain": "NSTA-C6"
+  },
+  {
+    "difficulty": "EASY",
+    "text": "In Python, which library is commonly used for managing and analyzing statistical data in data frames?",
+    "options": [
+      "NumPy",
+      "Pandas",
+      "Matplotlib",
+      "SciPy"
+    ],
+    "correctIndex": 1,
+    "explanation": "Pandas is the primary library in Python used for data manipulation and analysis, particularly with data frames.",
+    "domain": "NSTA-C6"
+  },
+  {
+    "difficulty": "EASY",
+    "text": "Which of the following functions is used in R to calculate weighted mean based on survey data?",
+    "options": [
+      "weighted.mean()",
+      "mean.weighted()",
+      "survey.mean()",
+      "mean()"
+    ],
+    "correctIndex": 0,
+    "explanation": "The function 'weighted.mean()' in R is specifically used to calculate the weighted mean of a vector.",
+    "domain": "NSTA-C6"
+  },
+  {
+    "difficulty": "EASY",
+    "text": "What is the first step in constructing a reproducible analysis pipeline?",
+    "options": [
+      "Documenting the analysis results",
+      "Writing the analysis code",
+      "Acquiring and cleaning the data",
+      "Visualizing the results"
+    ],
+    "correctIndex": 2,
+    "explanation": "The first step in constructing a reproducible analysis pipeline is acquiring and cleaning the data, which sets the foundation for subsequent analysis.",
+    "domain": "NSTA-C6"
+  },
+  {
+    "difficulty": "EASY",
+    "text": "In R, which package is primarily used for producing publication-quality graphics?",
+    "options": [
+      "ggplot2",
+      "lattice",
+      "graphics",
+      "plotly"
+    ],
+    "correctIndex": 0,
+    "explanation": "The package 'ggplot2' is widely used in R for creating high-quality, informative data visualizations.",
+    "domain": "NSTA-C6"
+  },
+  {
+    "difficulty": "MODERATE",
+    "text": "When applying a complex survey design, which method is most commonly employed to adjust for unequal probabilities of selection in R?",
+    "options": [
+      "Using the 'svydesign' function",
+      "Using the 'lm' function",
+      "Using the 'glm' function",
+      "Using the 't.test' function"
+    ],
+    "correctIndex": 0,
+    "explanation": "The 'svydesign' function in R is used to create survey design objects that incorporate features such as weights and cluster sampling.",
+    "domain": "NSTA-C6"
+  },
+  {
+    "difficulty": "MODERATE",
+    "text": "In dealing with missing data in survey analysis, which of the following methods is recommended to maintain the validity of the analysis?",
+    "options": [
+      "Listwise deletion",
+      "Mean imputation",
+      "Multiple imputation",
+      "Ignoring the missing data"
+    ],
+    "correctIndex": 2,
+    "explanation": "Multiple imputation is a recommended method for handling missing data as it allows for valid statistical inferences by creating multiple datasets and combining results.",
+    "domain": "NSTA-C6"
+  },
+  {
+    "difficulty": "MODERATE",
+    "text": "Which function in R can be used to estimate the variance in a complex survey design using the Taylor series linearization method?",
+    "options": [
+      "var()",
+      "design_effect()",
+      "svyvar()",
+      "survey.var()"
+    ],
+    "correctIndex": 2,
+    "explanation": "The 'svyvar()' function in the 'survey' package is specifically designed to compute variances using methods suitable for complex survey data.",
+    "domain": "NSTA-C6"
+  },
+  {
+    "difficulty": "MODERATE",
+    "text": "What is the main benefit of using the 'purrr' package in R as part of a reproducible analysis pipeline?",
+    "options": [
+      "To work with summarizing functions",
+      "To manipulate data frames",
+      "To automate repetitive tasks",
+      "To create simulations"
+    ],
+    "correctIndex": 2,
+    "explanation": "The 'purrr' package facilitates functional programming in R, making it easier to automate repetitive tasks in data analysis.",
+    "domain": "NSTA-C6"
+  },
+  {
+    "difficulty": "MODERATE",
+    "text": "In the context of complex survey analysis, what does the 'design effect' measure?",
+    "options": [
+      "The efficiency of a sample relative to a simple random sample",
+      "The precision of an estimate",
+      "The bias introduced in estimations",
+      "The overall sample size required"
+    ],
+    "correctIndex": 0,
+    "explanation": "The design effect measures the efficiency of a sample design as compared to simple random sampling, indicating how much more variability the complex design introduces.",
+    "domain": "NSTA-C6"
+  },
+  {
+    "difficulty": "HARD",
+    "text": "In R, which method would you use to adjust for nonresponse bias in survey analysis when utilizing design weights?",
+    "options": [
+      "Ratio adjustment",
+      "Post-stratification",
+      "Calibration weighting",
+      "Propensity score matching"
+    ],
+    "correctIndex": 1,
+    "explanation": "Post-stratification is a method used to adjust for nonresponse bias by aligning the sample distribution with known population distributions.",
+    "domain": "NSTA-C6"
+  },
+  {
+    "difficulty": "HARD",
+    "text": "When constructing a reproducible analysis pipeline, how can you ensure your code is both maintainable and adaptable to changes?",
+    "options": [
+      "Using hard-coded values",
+      "Writing modular functions",
+      "Limiting the use of external libraries",
+      "Keeping data in fixed formats"
+    ],
+    "correctIndex": 1,
+    "explanation": "Writing modular functions promotes code maintainability and adaptability, making it easier to modify parts of the pipeline without affecting the entire workflow.",
+    "domain": "NSTA-C6"
+  },
+  {
+    "difficulty": "HARD",
+    "text": "Which approach should be taken to properly handle stratification in variance estimation when analyzing data from a multi-stage complex survey design?",
+    "options": [
+      "Ignoring stratification effects",
+      "Applying a single-stage variance formula",
+      "Using stratified cluster variance estimation",
+      "Choosing a relevant standard error formula"
+    ],
+    "correctIndex": 2,
+    "explanation": "Using stratified cluster variance estimation correctly accounts for the survey's design, ensuring that the variance estimation reflects the multi-stage and stratified nature of the data.",
+    "domain": "NSTA-C6"
+  },
+  {
+    "difficulty": "HARD",
+    "text": "In the context of reproducible research, which of the following practices is essential for ensuring the integrity of results when using R Markdown?",
+    "options": [
+      "Using inline code for statistical outputs",
+      "Submitting only code without results",
+      "Relying on manual data entry",
+      "Discarding outlier data"
+    ],
+    "correctIndex": 0,
+    "explanation": "Using inline code in R Markdown allows for automatic updating of statistical outputs, ensuring that results remain consistent and reproducible when the code is run.",
+    "domain": "NSTA-C6"
+  },
+  {
+    "difficulty": "HARD",
+    "text": "What is a crucial consideration when developing an analysis pipeline for large and complex datasets in R?",
+    "options": [
+      "Limiting the use of loops",
+      "Avoiding the use of data frames",
+      "Using base R functions exclusively",
+      "Prioritizing data visualization over data cleaning"
+    ],
+    "correctIndex": 0,
+    "explanation": "Limiting the use of loops is crucial as it enhances performance and efficiency in handling large datasets, allowing for better scalability in R.",
+    "domain": "NSTA-C6"
+  },
+  {
+    "difficulty": "EASY",
+    "text": "What is the primary purpose of statistical dissemination in the context of official statistics?",
+    "options": [
+      "To ensure data is confidential",
+      "To promote public knowledge and transparency",
+      "To collect data efficiently",
+      "To minimize costs of data production"
+    ],
+    "correctIndex": 1,
+    "explanation": "The primary purpose of statistical dissemination is to promote public knowledge and transparency, enabling users to access and understand government statistics.",
+    "domain": "NSTA-C7"
+  },
+  {
+    "difficulty": "EASY",
+    "text": "Which of the following is an essential component of a publication standard in official statistics?",
+    "options": [
+      "Confidentiality protocols",
+      "Graphs and charts",
+      "User feedback mechanism",
+      "Online databases"
+    ],
+    "correctIndex": 0,
+    "explanation": "Confidentiality protocols are essential to ensure that sensitive data is protected while disseminating information.",
+    "domain": "NSTA-C7"
+  },
+  {
+    "difficulty": "EASY",
+    "text": "In statistics, the principle of data integrity primarily means:",
+    "options": [
+      "The data must be visually appealing",
+      "The data must be accurate and reliable",
+      "The data must be collected from various jurisdictions",
+      "The data must be shared with multiple agencies"
+    ],
+    "correctIndex": 1,
+    "explanation": "Data integrity refers to the accuracy and reliability of data, which is crucial for making informed decisions based on statistical information.",
+    "domain": "NSTA-C7"
+  },
+  {
+    "difficulty": "EASY",
+    "text": "Effective statistical communication primarily relies on which of the following?",
+    "options": [
+      "Complex terminology",
+      "Creative graphics",
+      "Clear and concise messaging",
+      "Lengthy reports"
+    ],
+    "correctIndex": 2,
+    "explanation": "Clear and concise messaging is vital in effective statistical communication, ensuring that the information is easily understood by all stakeholders.",
+    "domain": "NSTA-C7"
+  },
+  {
+    "difficulty": "EASY",
+    "text": "Which format is widely recognized as a standard for official statistical publications?",
+    "options": [
+      "PowerPoint presentations",
+      "PDF documents",
+      "Excel spreadsheets",
+      "Word documents"
+    ],
+    "correctIndex": 1,
+    "explanation": "PDF documents are widely recognized as a standard format for official statistical publications due to their consistent appearance and accessibility.",
+    "domain": "NSTA-C7"
+  },
+  {
+    "difficulty": "MODERATE",
+    "text": "When preparing data visualizations for a statistical report, what is a key consideration to enhance interpretability for diverse audiences?",
+    "options": [
+      "Using diverse color palettes",
+      "Incorporating technical jargon",
+      "Limiting the number of data points",
+      "Aligning visualizations with report structure"
+    ],
+    "correctIndex": 0,
+    "explanation": "Using diverse color palettes enhances interpretability by making visualizations accessible to individuals with color vision deficiencies, catering to a wider audience.",
+    "domain": "NSTA-C7"
+  },
+  {
+    "difficulty": "MODERATE",
+    "text": "In the context of data revision policy, the major reason for revising published statistics is:",
+    "options": [
+      "To update for new data collection methods",
+      "To correct errors in previously published data",
+      "To include user comments on previous data",
+      "To simplify complex datasets"
+    ],
+    "correctIndex": 1,
+    "explanation": "The main reason for revising published statistics is to correct errors, which is essential for maintaining data integrity and trust in official statistics.",
+    "domain": "NSTA-C7"
+  },
+  {
+    "difficulty": "MODERATE",
+    "text": "Which of the following best describes the role of metadata in statistical dissemination?",
+    "options": [
+      "To provide additional analysis",
+      "To explain the methodology used",
+      "To justify the costs of production",
+      "To improve data visualization"
+    ],
+    "correctIndex": 1,
+    "explanation": "Metadata describes the methodology used in data collection and processing, which is crucial for users to understand the context and limitations of the statistics.",
+    "domain": "NSTA-C7"
+  },
+  {
+    "difficulty": "MODERATE",
+    "text": "In statistical reporting, what is the purpose of using confidence intervals?",
+    "options": [
+      "To guarantee exact predictions",
+      "To summarize data trends",
+      "To provide a range within which the true value is expected to lie",
+      "To enhance graphical visuals"
+    ],
+    "correctIndex": 2,
+    "explanation": "Confidence intervals provide a range within which the true population parameter is likely to lie, offering insight into the uncertainty of the statistics.",
+    "domain": "NSTA-C7"
+  },
+  {
+    "difficulty": "MODERATE",
+    "text": "What is the key challenge when designing infographics for statistical data?",
+    "options": [
+      "Choosing graphic design software",
+      "Ensuring visual aesthetics",
+      "Balancing accuracy with simplicity",
+      "Collecting raw data"
+    ],
+    "correctIndex": 2,
+    "explanation": "The key challenge is balancing accuracy with simplicity, as complex data must be presented in an easily understandable manner without losing essential details.",
+    "domain": "NSTA-C7"
+  },
+  {
+    "difficulty": "HARD",
+    "text": "In the context of statistical communication, how should complex datasets be structured for effective public understanding?",
+    "options": [
+      "Using raw data tables",
+      "Limiting information to one visual",
+      "Employing simple narratives and context",
+      "Abandoning visuals for expanded text"
+    ],
+    "correctIndex": 2,
+    "explanation": "Employing simple narratives and context helps frame complex datasets in a way that is relatable, enhancing public understanding.",
+    "domain": "NSTA-C7"
+  },
+  {
+    "difficulty": "HARD",
+    "text": "In a scenario where data visualization reveals an outlier, what is the best practice for communicating this in a report?",
+    "options": [
+      "Ignoring the outlier to maintain focus",
+      "Labeling the outlier as an error",
+      "Providing context and explanation for the outlier",
+      "Disregarding visuals and focusing on text"
+    ],
+    "correctIndex": 2,
+    "explanation": "Providing context and explanation for the outlier helps the audience understand its significance and the data's overall narrative.",
+    "domain": "NSTA-C7"
+  },
+  {
+    "difficulty": "HARD",
+    "text": "When creating a multi-dimensional data dashboard, a significant challenge is:",
+    "options": [
+      "Incorporating social media links",
+      "Ensuring accessibility for users with disabilities",
+      "Focusing solely on aesthetic design",
+      "Using only one type of graph"
+    ],
+    "correctIndex": 1,
+    "explanation": "Ensuring accessibility for users with disabilities is crucial in a multi-dimensional data dashboard, as inclusivity enhances usability for all stakeholders.",
+    "domain": "NSTA-C7"
+  },
+  {
+    "difficulty": "HARD",
+    "text": "During a review process of statistical publications, a key aspect that must be adhered to for maintaining publication standards is:",
+    "options": [
+      "Mandatory peer reviews",
+      "Elimination of all visual components",
+      "Removal of historical data context",
+      "Reduction in technical accuracy for simpler terms"
+    ],
+    "correctIndex": 0,
+    "explanation": "Mandatory peer reviews are a key aspect of maintaining quality and credibility in statistical publications, ensuring that the work meets established standards before dissemination.",
+    "domain": "NSTA-C7"
+  },
+  {
+    "difficulty": "HARD",
+    "text": "When disseminating employment statistics, which method of data representation is most likely to mislead users if not addressed properly?",
+    "options": [
+      "Line graphs showing trends",
+      "Bar charts comparing categories",
+      "Pie charts showing percentage distribution",
+      "Heat maps indicating intensity"
+    ],
+    "correctIndex": 2,
+    "explanation": "Pie charts can mislead users if proportions are not clearly differentiated, especially for categories with similar sizes, potentially distorting interpretation.",
+    "domain": "NSTA-C7"
+  },
+  {
+    "difficulty": "EASY",
+    "text": "Which principle is fundamental to maintaining confidentiality in the collection and handling of official statistics under the Statistics Act in India?",
+    "options": [
+      "Transparency",
+      "Consent of respondents",
+      "Data retention for 10 years",
+      "Public accessibility"
+    ],
+    "correctIndex": 1,
+    "explanation": "Consent of respondents is essential to ensure that data is collected ethically and responsibly.",
+    "domain": "NSTA-C8"
+  },
+  {
+    "difficulty": "EASY",
+    "text": "Under the Statistics Act, what must be ensured when collecting personal data for statistical purposes?",
+    "options": [
+      "Use of pseudonyms",
+      "Public sharing immediately",
+      "Disclosure of identity to all stakeholders",
+      "Anonymization of responses"
+    ],
+    "correctIndex": 3,
+    "explanation": "Anonymization of responses is crucial to protect individual identities in data collection.",
+    "domain": "NSTA-C8"
+  },
+  {
+    "difficulty": "EASY",
+    "text": "Which of the following is a requirement under the Statistics Act regarding data publication?",
+    "options": [
+      "Complete datasets must be published",
+      "Aggregate data must not identify individuals",
+      "All data can be shared with private agencies",
+      "Data must be outdated before publication"
+    ],
+    "correctIndex": 1,
+    "explanation": "The Statistics Act mandates that aggregate data must be presented in such a way that individual respondents cannot be identified.",
+    "domain": "NSTA-C8"
+  },
+  {
+    "difficulty": "EASY",
+    "text": "What does the term 'micro-data' refer to in the context of official statistics?",
+    "options": [
+      "Data about macroeconomic indicators",
+      "Data related to average income",
+      "Individual-level data collected from respondents",
+      "Publicly available statistical summaries"
+    ],
+    "correctIndex": 2,
+    "explanation": "Micro-data refers to the individual-level data collected from respondents, which is subject to confidentiality protections.",
+    "domain": "NSTA-C8"
+  },
+  {
+    "difficulty": "EASY",
+    "text": "Which of the following statements is true regarding the release of individual-level data under the Statistics Act?",
+    "options": [
+      "It is always permissible to release individual-level data",
+      "Data must be anonymized before any release",
+      "Individual-level data can be released if requested",
+      "There are no restrictions on data release"
+    ],
+    "correctIndex": 1,
+    "explanation": "The act requires that individual-level data be anonymized to protect respondent confidentiality before any release.",
+    "domain": "NSTA-C8"
+  },
+  {
+    "difficulty": "MODERATE",
+    "text": "What is the recommended approach when an official dataset contains potentially identifying information?",
+    "options": [
+      "Release the dataset without modifications",
+      "Exclude sensitive variables from the dataset",
+      "Encrypt the entire dataset before release",
+      "Publish without any review"
+    ],
+    "correctIndex": 1,
+    "explanation": "Excluding sensitive variables from datasets minimizes the risk of identifying individuals while maintaining statistical reliability.",
+    "domain": "NSTA-C8"
+  },
+  {
+    "difficulty": "MODERATE",
+    "text": "When applying statistical disclosure control techniques, what is the primary goal of perturbation methods?",
+    "options": [
+      "To enhance the accuracy of the data",
+      "To allow for better data visualization",
+      "To protect the confidentiality of respondents' data",
+      "To increase the public access to datasets"
+    ],
+    "correctIndex": 2,
+    "explanation": "Perturbation methods aim to add noise to data to protect respondents' confidentiality while allowing for analysis.",
+    "domain": "NSTA-C8"
+  },
+  {
+    "difficulty": "MODERATE",
+    "text": "In the process of preparing data for external access, which of the following practices should be avoided?",
+    "options": [
+      "Conducting a risk assessment for disclosure",
+      "Anonymizing the data before release",
+      "Including a metadata file that describes the dataset",
+      "Providing full names in the dataset for clarity"
+    ],
+    "correctIndex": 3,
+    "explanation": "Including full names in the dataset poses a risk to respondent confidentiality and should be avoided.",
+    "domain": "NSTA-C8"
+  },
+  {
+    "difficulty": "MODERATE",
+    "text": "How should an organization ensure adherence to the principles of the Statistics Act during data handling?",
+    "options": [
+      "Training staff on ethical data practices",
+      "Allowing unrestricted access to all employees",
+      "Prioritizing speed over accuracy",
+      "Collecting data without guidelines"
+    ],
+    "correctIndex": 0,
+    "explanation": "Training staff on ethical data practices ensures proper handling and respect for confidentiality according to the Statistics Act.",
+    "domain": "NSTA-C8"
+  },
+  {
+    "difficulty": "MODERATE",
+    "text": "Which of the following is a key consideration when applying k-anonymity in data anonymization?",
+    "options": [
+      "Ensuring every respondent is directly identifiable",
+      "Balancing data utility and confidentiality",
+      "Maximizing the number of unique identifiers",
+      "Using complex algorithms without testing"
+    ],
+    "correctIndex": 1,
+    "explanation": "K-anonymity ensures that each individual's data cannot be distinguished from at least 'k' individuals, balancing confidentiality and data utility.",
+    "domain": "NSTA-C8"
+  },
+  {
+    "difficulty": "HARD",
+    "text": "In the context of disclosure control, what is a residual risk, and how should it be addressed when releasing micro-data?",
+    "options": [
+      "Risk that all data might leak",
+      "Risk of non-disclosure agreements failing",
+      "Possible re-identification of respondents despite anonymization",
+      "No risk exists in disseminating aggregated data"
+    ],
+    "correctIndex": 2,
+    "explanation": "Residual risk refers to the chance of re-identification of individuals even after anonymization, which must be assessed and mitigated.",
+    "domain": "NSTA-C8"
+  },
+  {
+    "difficulty": "HARD",
+    "text": "If a dataset is found to have a high risk of re-identification due to the small size of the population in a particular category, what action should be taken to mitigate this risk?",
+    "options": [
+      "Increasing the sample size",
+      "Removing the entire category from the dataset",
+      "Adding synthetic noise to the data",
+      "Publishing the dataset irrespective of the risk"
+    ],
+    "correctIndex": 2,
+    "explanation": "Adding synthetic noise is an effective method of preserving confidentiality while allowing data to remain useful for analysis.",
+    "domain": "NSTA-C8"
+  },
+  {
+    "difficulty": "HARD",
+    "text": "When engaging external researchers with access to micro-data, what compliance measures are most critical for protecting confidentiality?",
+    "options": [
+      "Trusting researchers to handle data responsibly",
+      "Providing unmonitored access to all datasets",
+      "Implementing detailed data use agreements",
+      "No compliance measures are needed after training"
+    ],
+    "correctIndex": 2,
+    "explanation": "Implementing detailed data use agreements ensures that external researchers understand their responsibilities and the importance of data confidentiality.",
+    "domain": "NSTA-C8"
+  },
+  {
+    "difficulty": "HARD",
+    "text": "In assessing the effectiveness of a disclosure control method, what is a valid metric for evaluating its success?",
+    "options": [
+      "The number of users accessing the data",
+      "The percentage of released data that is anonymous",
+      "The speed at which data is processed",
+      "The volume of datasets released"
+    ],
+    "correctIndex": 1,
+    "explanation": "Evaluating the percentage of released data that remains anonymous assesses the effectiveness of the disclosure control method in protecting confidentiality.",
+    "domain": "NSTA-C8"
+  },
+  {
+    "difficulty": "HARD",
+    "text": "When micro-data is released for research, what ethical principle should govern the balance between data utility and confidentiality?",
+    "options": [
+      "The principle of maximum access",
+      "The principle of informed consent only",
+      "The principle of minimal disclosure required",
+      "The principle of full transparency to all"
+    ],
+    "correctIndex": 2,
+    "explanation": "The principle of minimal disclosure required ensures that only necessary information is shared, safeguarding confidentiality while allowing research benefits.",
+    "domain": "NSTA-C8"
+  }
+]

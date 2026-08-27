@@ -1,0 +1,261 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// SQLite has no native enum type, so enum-like fields below are plain
+// Strings. The allowed values for each are documented inline and defined
+// as TS union types in lib/types.ts, which application code imports from
+// instead of @prisma/client.
+
+// --- Identity -------------------------------------------------------------
+
+model User {
+  id           String   @id @default(cuid())
+  name         String
+  employeeId   String   @unique
+  passwordHash String
+  role         String // designation, e.g. "Deputy Director, NSO Field Ops" - keys RoleBenchmark
+  office       String
+  isAdmin      Boolean  @default(false)
+  createdAt    DateTime @default(now())
+
+  attempts        AssessmentAttempt[]
+  competencyScore CompetencyScore[]
+  enrollments     Enrollment[]
+  learningPaths   LearningPath[]
+  documents       Document[]
+  igotSyncLogs    IgotSyncLog[]
+  chatMessages    ChatMessage[]
+}
+
+// --- Competency framework (NSTA) ------------------------------------------
+
+model CompetencyDomain {
+  id          String  @id @default(cuid())
+  code        String  @unique // NSTA-C1 .. NSTA-C8
+  name        String
+  description String
+  order       Int
+
+  benchmarks         RoleBenchmark[]
+  questions          Question[]
+  competencyScores   CompetencyScore[]
+  courseLinks        CourseDomain[]
+  generatedQuestions GeneratedQuestion[]
+}
+
+model RoleBenchmark {
+  id            String @id @default(cuid())
+  role          String
+  domainId      String
+  requiredLevel Int // 1-5
+
+  domain CompetencyDomain @relation(fields: [domainId], references: [id])
+
+  @@unique([role, domainId])
+}
+
+// --- Diagnostic assessment --------------------------------------------------
+
+model Question {
+  id           String @id @default(cuid())
+  domainId     String
+  text         String
+  options      String // JSON.stringify(string[4])
+  correctIndex Int
+  difficulty   String // "EASY" | "MODERATE" | "HARD"
+  explanation  String
+
+  domain  CompetencyDomain    @relation(fields: [domainId], references: [id])
+  answers AssessmentAnswer[]
+}
+
+model AssessmentAttempt {
+  id          String    @id @default(cuid())
+  userId      String
+  status      String    @default("IN_PROGRESS") // "IN_PROGRESS" | "COMPLETED"
+  startedAt   DateTime  @default(now())
+  completedAt DateTime?
+
+  user             User               @relation(fields: [userId], references: [id])
+  answers          AssessmentAnswer[]
+  competencyScores CompetencyScore[]
+  learningPaths    LearningPath[]
+}
+
+model AssessmentAnswer {
+  id          String   @id @default(cuid())
+  attemptId   String
+  questionId  String
+  domainId    String
+  orderIndex  Int
+  pickedIndex Int
+  correct     Boolean
+  difficulty  String // "EASY" | "MODERATE" | "HARD"
+  answeredAt  DateTime @default(now())
+
+  attempt  AssessmentAttempt @relation(fields: [attemptId], references: [id])
+  question Question          @relation(fields: [questionId], references: [id])
+
+  @@unique([attemptId, questionId])
+}
+
+// current + historical per-domain levels, one row per completed attempt
+model CompetencyScore {
+  id         String   @id @default(cuid())
+  userId     String
+  domainId   String
+  attemptId  String?
+  level      Int // 1-5
+  ratio      Float // raw difficulty-weighted correctness, 0-1
+  isCurrent  Boolean  @default(true)
+  computedAt DateTime @default(now())
+
+  user    User               @relation(fields: [userId], references: [id])
+  domain  CompetencyDomain   @relation(fields: [domainId], references: [id])
+  attempt AssessmentAttempt? @relation(fields: [attemptId], references: [id])
+
+  @@index([userId, domainId, isCurrent])
+}
+
+// --- Courses & recommendations ---------------------------------------------
+
+model Course {
+  id          String @id @default(cuid())
+  title       String
+  description String
+  source      String // "IGOT_KARMAYOGI" | "MOSPI_NSTA"
+  hours       Int
+  mandatory   Boolean @default(false)
+  externalId  String? // id in the upstream iGOT catalog, when source = IGOT_KARMAYOGI
+
+  domains     CourseDomain[]
+  enrollments Enrollment[]
+  pathItems   LearningPathItem[]
+}
+
+model CourseDomain {
+  id       String @id @default(cuid())
+  courseId String
+  domainId String
+  weight   Float // 0-1 relevance of this course to the domain
+
+  course Course           @relation(fields: [courseId], references: [id])
+  domain CompetencyDomain @relation(fields: [domainId], references: [id])
+
+  @@unique([courseId, domainId])
+}
+
+model Enrollment {
+  id          String    @id @default(cuid())
+  userId      String
+  courseId    String
+  status      String    @default("ENROLLED") // "RECOMMENDED" | "ENROLLED" | "IN_PROGRESS" | "COMPLETED"
+  progressPct Int       @default(0)
+  enrolledAt  DateTime  @default(now())
+  completedAt DateTime?
+
+  user   User   @relation(fields: [userId], references: [id])
+  course Course @relation(fields: [courseId], references: [id])
+
+  @@unique([userId, courseId])
+}
+
+model LearningPath {
+  id          String   @id @default(cuid())
+  userId      String
+  attemptId   String?
+  generatedAt DateTime @default(now())
+  weeksTotal  Int
+  hoursTotal  Int
+
+  user    User                @relation(fields: [userId], references: [id])
+  attempt AssessmentAttempt?  @relation(fields: [attemptId], references: [id])
+  items   LearningPathItem[]
+}
+
+model LearningPathItem {
+  id         String @id @default(cuid())
+  pathId     String
+  courseId   String
+  orderIndex Int
+  weekStart  Int
+  weekEnd    Int
+  rationale  String
+
+  path   LearningPath @relation(fields: [pathId], references: [id])
+  course Course       @relation(fields: [courseId], references: [id])
+}
+
+// --- Quiz studio (AI-assisted MCQ authoring from uploaded material) --------
+
+model Document {
+  id            String   @id @default(cuid())
+  userId        String
+  filename      String
+  mimeType      String
+  sizeBytes     Int
+  pageCount     Int?
+  conceptCount  Int?
+  extractedText String // stored so questions can be regenerated / audited
+  status        String   @default("PROCESSING") // "PROCESSING" | "PARSED" | "FAILED"
+  uploadedAt    DateTime @default(now())
+
+  user         User                @relation(fields: [userId], references: [id])
+  questions    GeneratedQuestion[]
+  chatMessages ChatMessage[]
+}
+
+// --- AI Tutor: chat grounded in one uploaded document -----------------------
+// Lightweight RAG: the whole (truncated) document text is passed as context
+// on every turn rather than chunked + embedded, since Quiz Studio documents
+// are short enough for this to fit a normal context window. If no LLM key is
+// configured, falls back to a keyword-search-over-the-text responder instead
+// of failing outright.
+
+model ChatMessage {
+  id         String   @id @default(cuid())
+  documentId String
+  userId     String
+  role       String // "USER" | "ASSISTANT"
+  content    String
+  createdAt  DateTime @default(now())
+
+  document Document @relation(fields: [documentId], references: [id])
+  user     User     @relation(fields: [userId], references: [id])
+}
+
+model GeneratedQuestion {
+  id           String   @id @default(cuid())
+  documentId   String
+  domainId     String?
+  text         String
+  options      String // JSON.stringify(string[4])
+  correctIndex Int
+  difficulty   String // "EASY" | "MODERATE" | "HARD"
+  page         Int?
+  status       String   @default("DRAFT") // "DRAFT" | "APPROVED" | "REJECTED" | "PUBLISHED"
+  generatedBy  String // "llm:<model>" or "heuristic"
+  createdAt    DateTime @default(now())
+
+  document Document          @relation(fields: [documentId], references: [id])
+  domain   CompetencyDomain? @relation(fields: [domainId], references: [id])
+}
+
+// --- iGOT Karmayogi connector activity log ----------------------------------
+
+model IgotSyncLog {
+  id        String   @id @default(cuid())
+  userId    String?
+  kind      String // "CATALOG_FETCH" | "PROGRESS_PUSH" | "PASSBOOK_SYNC" | "QUIZ_PUBLISH"
+  simulated Boolean
+  payload   String // JSON.stringify(...)
+  createdAt DateTime @default(now())
+
+  user User? @relation(fields: [userId], references: [id])
+}
