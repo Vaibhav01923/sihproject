@@ -20,19 +20,44 @@ export async function getKarmayogiCredits(userId: string) {
 }
 
 /** Competency index for every user sharing the caller's role, for a simple
- * "how do I compare to peers with the same designation" benchmark. */
+ * "how do I compare to peers with the same designation" benchmark.
+ *
+ * Batched into a fixed 3 queries regardless of cohort size - this used to
+ * call getCompetencyIndex() (3 queries each) per peer via Promise.all,
+ * which meant a single Overview page load could fire 60+ concurrent
+ * queries for a role with ~20 peers. SQLite never surfaced that as a
+ * problem; a real pooled Postgres connection limit does immediately. */
 export async function getCohortBenchmark(userId: string) {
   const user = await prisma.user.findUniqueOrThrow({ where: { id: userId } });
   const peers = await prisma.user.findMany({ where: { role: user.role }, select: { id: true } });
+  const peerIds = peers.map((p) => p.id);
 
-  const indices = await Promise.all(peers.map((p) => getCompetencyIndex(p.id)));
+  const scores = await prisma.competencyScore.findMany({
+    where: { userId: { in: peerIds }, isCurrent: true },
+    select: { userId: true, level: true },
+  });
+  const levelsByUser = new Map<string, number[]>();
+  for (const s of scores) {
+    const arr = levelsByUser.get(s.userId) ?? [];
+    arr.push(s.level);
+    levelsByUser.set(s.userId, arr);
+  }
+
+  // Mirrors getGapAnalysis's floor: a domain with no score yet counts as level 1.
+  const indexFor = (id: string) => {
+    const levels = levelsByUser.get(id) ?? [];
+    const total = levels.reduce((s, l) => s + l, 0) + (DOMAINS.length - levels.length) * 1;
+    return Math.round((total / DOMAINS.length / 5) * 100);
+  };
+
+  const indices = peerIds.map(indexFor);
   const sorted = [...indices].sort((a, b) => a - b);
   const median = sorted.length ? sorted[Math.floor(sorted.length / 2)] : 0;
-  const mine = await getCompetencyIndex(userId);
+  const mine = indexFor(userId);
   const rank = sorted.filter((v) => v <= mine).length;
   const percentile = sorted.length > 1 ? Math.round((rank / sorted.length) * 100) : 100;
 
-  return { mine, peerMedian: median, percentile, cohortSize: peers.length };
+  return { mine, peerMedian: median, percentile, cohortSize: peerIds.length };
 }
 
 // --- Admin / office-wide aggregation ---------------------------------------
