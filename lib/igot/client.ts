@@ -1,4 +1,5 @@
-import { prisma } from "../db";
+import { db } from "../db";
+import { newId } from "../id";
 import { IgotLogKind } from "../types";
 
 /**
@@ -24,9 +25,10 @@ const API_KEY = process.env.IGOT_API_KEY;
 export const IGOT_LIVE = Boolean(BASE_URL && API_KEY);
 
 async function log(kind: IgotLogKind, payload: unknown, userId?: string) {
-  await prisma.igotSyncLog.create({
-    data: { kind, userId, simulated: !IGOT_LIVE, payload: JSON.stringify(payload) },
-  });
+  const { error } = await db
+    .from("IgotSyncLog")
+    .insert({ id: newId(), kind, userId: userId ?? null, simulated: !IGOT_LIVE, payload: JSON.stringify(payload) });
+  if (error) console.error("Failed to write IgotSyncLog:", error.message);
 }
 
 function simulatedDelay() {

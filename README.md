@@ -14,9 +14,9 @@ engine, and real PDF-to-MCQ generation.
 
 ```bash
 npm install
-cp .env.example .env      # defaults work as-is (SQLite, no API keys needed)
-npx prisma migrate dev    # creates the local SQLite DB and runs it once
-npm run dev                # http://localhost:3000
+cp .env.example .env       # fill in SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY from your Supabase project settings
+npm run seed                # one-time: seeds domains, courses, question bank, demo user + pilot cohort
+npm run dev                 # http://localhost:3000
 ```
 
 Log in with the seeded demo account:
@@ -24,7 +24,7 @@ Log in with the seeded demo account:
 - **Employee ID:** `MOSPI-00001`
 - **Password:** `demo1234`
 
-To start over with a fresh seed at any point: `npx prisma migrate reset --force`.
+To start over with a fresh seed, truncate the tables in the Supabase SQL editor and re-run `npm run seed` (it skips itself if `CompetencyDomain` already has rows).
 
 ## What's real vs. simulated, and why
 
@@ -63,8 +63,9 @@ to live mode with no other code changes.
 
 - **Next.js 15** (App Router, TypeScript) — one full-stack app; API routes
   double as the backend, no separate server to run
-- **Prisma + SQLite** — zero setup (a local file, created automatically);
-  swap the `DATABASE_URL` for Postgres later with no code changes
+- **Supabase (Postgres)** via `@supabase/supabase-js` — the server-side
+  `service_role` key talks directly to Postgres through Supabase's REST
+  layer, no ORM in between
 - **JWT in an httpOnly cookie**, bcrypt password hashing (login is by
   Employee ID, matching how staff actually identify themselves, not email)
 - **OpenAI API** (`openai`, default model `gpt-4o-mini`) for quiz generation
@@ -114,10 +115,13 @@ lib/
   llm/quizgen.ts       LLM + heuristic MCQ generation
   llm/tutor.ts         LLM + keyword-search AI tutor
   igot/client.ts       the iGOT Karmayogi connector (simulated/live)
-prisma/
-  schema.prisma        data model
+  db.ts                Supabase client + unwrap() helper
+  schema.ts             hand-written row types for every table (source of
+                         truth now that there's no ORM generating them)
+db/
   seed.ts               question bank, course catalog, demo user + a seeded
                          pilot cohort across 6 offices for admin analytics
+  questionData.ts        the seeded diagnostic question bank
 ```
 
 ## Notes on scope

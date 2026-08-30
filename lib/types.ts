@@ -1,6 +1,6 @@
-// SQLite has no native enum support, so the Prisma schema stores these as
-// plain strings. These union types are the single source of truth for the
-// allowed values everywhere in application code.
+// These columns are stored as plain TEXT in Postgres (see lib/schema.ts).
+// These union types are the single source of truth for the allowed values
+// everywhere in application code.
 
 export type Difficulty = "EASY" | "MODERATE" | "HARD";
 export type AttemptStatus = "IN_PROGRESS" | "COMPLETED";

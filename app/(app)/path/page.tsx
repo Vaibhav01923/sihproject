@@ -1,7 +1,7 @@
 import { getCurrentUser } from "@/lib/auth";
 import { getLatestLearningPath } from "@/lib/recommend";
 import { getPathProjection } from "@/lib/analytics";
-import { prisma } from "@/lib/db";
+import { db } from "@/lib/db";
 import PageHeader from "@/components/PageHeader";
 import GeneratePathButton from "./GeneratePathButton";
 import CourseProgressControl from "@/components/CourseProgressControl";
@@ -10,9 +10,13 @@ export default async function PathPage() {
   const user = await getCurrentUser();
   if (!user) return null;
 
-  const hasCompletedAssessment = await prisma.assessmentAttempt.findFirst({
-    where: { userId: user.id, status: "COMPLETED" },
-  });
+  const { data: hasCompletedAssessment } = await db
+    .from("AssessmentAttempt")
+    .select("id")
+    .eq("userId", user.id)
+    .eq("status", "COMPLETED")
+    .limit(1)
+    .maybeSingle();
   const path = await getLatestLearningPath(user.id);
 
   return (
@@ -45,10 +49,12 @@ export default async function PathPage() {
 }
 
 async function PathBody({ userId, path }: { userId: string; path: NonNullable<Awaited<ReturnType<typeof getLatestLearningPath>>> }) {
-  const [projection, enrollments] = await Promise.all([
-    getPathProjection(userId, path.items.map((i) => i.courseId)),
-    prisma.enrollment.findMany({ where: { userId, courseId: { in: path.items.map((i) => i.courseId) } } }),
+  const courseIds = path.items.map((i) => i.courseId);
+  const [projection, { data: enrollmentsData }] = await Promise.all([
+    getPathProjection(userId, courseIds),
+    db.from("Enrollment").select("*").eq("userId", userId).in("courseId", courseIds),
   ]);
+  const enrollments = enrollmentsData ?? [];
   const enrollmentByCourseId = Object.fromEntries(enrollments.map((e) => [e.courseId, { status: e.status, progressPct: e.progressPct }]));
 
   return (

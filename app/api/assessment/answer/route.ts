@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/db";
+import { db } from "@/lib/db";
 import { requireUser, AuthError } from "@/lib/auth";
 import { answerSchema } from "@/lib/validation";
 import { submitAnswer, getNextQuestion } from "@/lib/assessment";
@@ -22,7 +22,7 @@ export async function POST(req: NextRequest) {
   }
   const { attemptId, questionId, pickedIndex } = parsed.data;
 
-  const attempt = await prisma.assessmentAttempt.findUnique({ where: { id: attemptId } });
+  const { data: attempt } = await db.from("AssessmentAttempt").select("*").eq("id", attemptId).maybeSingle();
   if (!attempt || attempt.userId !== user.id) {
     return NextResponse.json({ error: "Attempt not found" }, { status: 404 });
   }

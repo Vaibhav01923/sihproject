@@ -9,7 +9,7 @@
 import OpenAI from "openai";
 import { writeFileSync } from "fs";
 import { DOMAINS } from "../lib/domains";
-import { QUESTIONS as EXISTING } from "../prisma/questionData";
+import { QUESTIONS as EXISTING } from "../db/questionData";
 
 const MODEL = process.env.OPENAI_MODEL || "gpt-4o-mini";
 
@@ -96,7 +96,7 @@ async function main() {
   const outPath = "scripts/questionBank.draft.json";
   writeFileSync(outPath, JSON.stringify(all, null, 2));
   console.log(`\nWrote ${all.length} drafted questions to ${outPath}`);
-  console.log("Review before merging into prisma/questionData.ts");
+  console.log("Review before merging into db/questionData.ts");
 }
 
 main().catch((e) => {

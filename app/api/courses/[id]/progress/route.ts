@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { prisma } from "@/lib/db";
+import { db } from "@/lib/db";
 import { requireUser, AuthError } from "@/lib/auth";
 import { pushProgress } from "@/lib/igot/client";
 
@@ -21,9 +21,12 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
       return NextResponse.json({ error: parsed.error.issues[0]?.message ?? "Invalid progress value" }, { status: 400 });
     }
 
-    const existing = await prisma.enrollment.findUnique({
-      where: { userId_courseId: { userId: user.id, courseId } },
-    });
+    const { data: existing } = await db
+      .from("Enrollment")
+      .select("id")
+      .eq("userId", user.id)
+      .eq("courseId", courseId)
+      .maybeSingle();
     if (!existing) {
       return NextResponse.json({ error: "Not enrolled in this course" }, { status: 404 });
     }
@@ -31,10 +34,14 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
     const progressPct = parsed.data.progressPct;
     const status = progressPct >= 100 ? "COMPLETED" : progressPct > 0 ? "IN_PROGRESS" : "ENROLLED";
 
-    const updated = await prisma.enrollment.update({
-      where: { userId_courseId: { userId: user.id, courseId } },
-      data: { progressPct, status, completedAt: status === "COMPLETED" ? new Date() : null },
-    });
+    const { data: updated, error } = await db
+      .from("Enrollment")
+      .update({ progressPct, status, completedAt: status === "COMPLETED" ? new Date().toISOString() : null })
+      .eq("userId", user.id)
+      .eq("courseId", courseId)
+      .select()
+      .single();
+    if (error) throw new Error(error.message);
 
     await pushProgress(user.id, courseId, progressPct);
     return NextResponse.json({ ok: true, enrollment: { status: updated.status, progressPct: updated.progressPct } });

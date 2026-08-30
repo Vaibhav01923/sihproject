@@ -1,7 +1,8 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { cookies } from "next/headers";
-import { prisma } from "./db";
+import { db } from "./db";
+import type { UserRow } from "./schema";
 
 const JWT_SECRET = process.env.JWT_SECRET || "dev-secret-change-me";
 const COOKIE_NAME = "sk_session";
@@ -36,13 +37,15 @@ export async function clearSessionCookie() {
   store.delete(COOKIE_NAME);
 }
 
-export async function getCurrentUser() {
+export async function getCurrentUser(): Promise<UserRow | null> {
   const store = await cookies();
   const token = store.get(COOKIE_NAME)?.value;
   if (!token) return null;
   try {
     const payload = jwt.verify(token, JWT_SECRET) as { sub: string };
-    return await prisma.user.findUnique({ where: { id: payload.sub } });
+    const { data, error } = await db.from("User").select("*").eq("id", payload.sub).maybeSingle();
+    if (error) return null;
+    return data as UserRow | null;
   } catch {
     return null;
   }

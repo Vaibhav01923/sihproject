@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/db";
+import { db, unwrap } from "@/lib/db";
+import { newId } from "@/lib/id";
 import { hashPassword, setSessionCookie } from "@/lib/auth";
 import { registerSchema } from "@/lib/validation";
+import type { UserRow } from "@/lib/schema";
 
 export async function POST(req: NextRequest) {
   const body = await req.json().catch(() => null);
@@ -11,15 +13,19 @@ export async function POST(req: NextRequest) {
   }
   const { name, employeeId, password, role, office } = parsed.data;
 
-  const existing = await prisma.user.findUnique({ where: { employeeId } });
+  const { data: existing } = await db.from("User").select("id").eq("employeeId", employeeId).maybeSingle();
   if (existing) {
     return NextResponse.json({ error: "That Employee ID is already registered" }, { status: 409 });
   }
 
   const passwordHash = await hashPassword(password);
-  const user = await prisma.user.create({
-    data: { name, employeeId, passwordHash, role, office },
-  });
+  const user: UserRow = unwrap(
+    await db
+      .from("User")
+      .insert({ id: newId(), name, employeeId, passwordHash, role, office })
+      .select()
+      .single()
+  );
 
   await setSessionCookie(user.id);
   return NextResponse.json({ ok: true });

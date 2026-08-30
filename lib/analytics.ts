@@ -1,6 +1,7 @@
-import { prisma } from "./db";
+import { db } from "./db";
 import { DOMAINS, ROLE_BENCHMARKS, OFFICES, priorityForGap } from "./domains";
 import { getGapAnalysis } from "./recommend";
+import type { CompetencyDomainRow } from "./schema";
 
 /** Mean current level (1-5) across all domains, scaled to 0-100. */
 export async function getCompetencyIndex(userId: string) {
@@ -10,13 +11,19 @@ export async function getCompetencyIndex(userId: string) {
 }
 
 export async function getHoursCompleted(userId: string) {
-  const enrollments = await prisma.enrollment.findMany({ where: { userId }, include: { course: true } });
-  const hours = enrollments.reduce((s, e) => s + (e.course.hours * e.progressPct) / 100, 0);
+  const { data } = await db.from("Enrollment").select("progressPct, course:Course(hours)").eq("userId", userId);
+  const enrollments = (data ?? []) as unknown as { progressPct: number; course: { hours: number } | null }[];
+  const hours = enrollments.reduce((s, e) => s + ((e.course?.hours ?? 0) * e.progressPct) / 100, 0);
   return Math.round(hours);
 }
 
 export async function getKarmayogiCredits(userId: string) {
-  return prisma.enrollment.count({ where: { userId, status: "COMPLETED" } });
+  const { count } = await db
+    .from("Enrollment")
+    .select("*", { count: "exact", head: true })
+    .eq("userId", userId)
+    .eq("status", "COMPLETED");
+  return count ?? 0;
 }
 
 /** Competency index for every user sharing the caller's role, for a simple
@@ -28,14 +35,20 @@ export async function getKarmayogiCredits(userId: string) {
  * queries for a role with ~20 peers. SQLite never surfaced that as a
  * problem; a real pooled Postgres connection limit does immediately. */
 export async function getCohortBenchmark(userId: string) {
-  const user = await prisma.user.findUniqueOrThrow({ where: { id: userId } });
-  const peers = await prisma.user.findMany({ where: { role: user.role }, select: { id: true } });
-  const peerIds = peers.map((p) => p.id);
+  const { data: userData, error: userError } = await db.from("User").select("*").eq("id", userId).single();
+  if (userError) throw new Error(userError.message);
+  const user = userData as { id: string; role: string };
 
-  const scores = await prisma.competencyScore.findMany({
-    where: { userId: { in: peerIds }, isCurrent: true },
-    select: { userId: true, level: true },
-  });
+  const { data: peersData } = await db.from("User").select("id").eq("role", user.role);
+  const peerIds = (peersData ?? []).map((p) => p.id as string);
+
+  const { data: scoresData } = await db
+    .from("CompetencyScore")
+    .select("userId, level")
+    .in("userId", peerIds)
+    .eq("isCurrent", true);
+  const scores = (scoresData ?? []) as { userId: string; level: number }[];
+
   const levelsByUser = new Map<string, number[]>();
   for (const s of scores) {
     const arr = levelsByUser.get(s.userId) ?? [];
@@ -63,82 +76,106 @@ export async function getCohortBenchmark(userId: string) {
 // --- Admin / office-wide aggregation ---------------------------------------
 
 export async function getAdminTiles() {
-  const [staffCount, diagnosedCount, quizCount] = await Promise.all([
-    prisma.user.count(),
-    prisma.competencyScore.groupBy({ by: ["userId"] }).then((rows) => rows.length),
-    prisma.generatedQuestion.count(),
+  const [{ count: staffCount }, { data: scoreRows }, { count: quizCount }, { count: documentCount }] = await Promise.all([
+    db.from("User").select("*", { count: "exact", head: true }),
+    db.from("CompetencyScore").select("userId"),
+    db.from("GeneratedQuestion").select("*", { count: "exact", head: true }),
+    db.from("Document").select("*", { count: "exact", head: true }),
   ]);
+  const diagnosedCount = new Set((scoreRows ?? []).map((r) => r.userId as string)).size;
   const atBenchmarkCount = await countAtBenchmark();
-  const documentCount = await prisma.document.count();
 
   return {
-    staffOnboarded: staffCount,
+    staffOnboarded: staffCount ?? 0,
     diagnosticsTaken: diagnosedCount,
     diagnosticsPct: staffCount ? Math.round((diagnosedCount / staffCount) * 100) : 0,
     atBenchmarkPct: diagnosedCount ? Math.round((atBenchmarkCount / diagnosedCount) * 100) : 0,
-    quizzesGenerated: quizCount,
-    documentsUploaded: documentCount,
+    quizzesGenerated: quizCount ?? 0,
+    documentsUploaded: documentCount ?? 0,
   };
 }
 
-async function countAtBenchmark() {
-  const domains = await prisma.competencyDomain.findMany();
-  const domainCodeById = new Map(domains.map((d) => [d.id, d.code]));
-  const users = await prisma.user.findMany({
-    select: { id: true, role: true, competencyScore: { where: { isCurrent: true } } },
+/** True if every one of this user's current scores meets (or has no
+ * benchmark defined for) their role's requirement. */
+function meetsBenchmark(
+  role: string,
+  userScores: { domainId: string; level: number }[],
+  domainCodeById: Map<string, string>
+): boolean {
+  const benchmark = ROLE_BENCHMARKS[role] ?? {};
+  return userScores.every((s) => {
+    const code = domainCodeById.get(s.domainId);
+    const required = code ? benchmark[code as keyof typeof benchmark] : undefined;
+    return required === undefined || s.level >= required;
   });
+}
+
+async function countAtBenchmark() {
+  const { data: domainsData } = await db.from("CompetencyDomain").select("*");
+  const domainCodeById = new Map(((domainsData ?? []) as CompetencyDomainRow[]).map((d) => [d.id, d.code]));
+
+  const { data: usersData } = await db.from("User").select("id, role");
+  const users = (usersData ?? []) as { id: string; role: string }[];
+
+  const { data: scoresData } = await db.from("CompetencyScore").select("userId, domainId, level").eq("isCurrent", true);
+  const scoresByUser = new Map<string, { domainId: string; level: number }[]>();
+  for (const s of (scoresData ?? []) as { userId: string; domainId: string; level: number }[]) {
+    const arr = scoresByUser.get(s.userId) ?? [];
+    arr.push(s);
+    scoresByUser.set(s.userId, arr);
+  }
 
   let count = 0;
   for (const u of users) {
-    if (u.competencyScore.length === 0) continue;
-    const benchmark = ROLE_BENCHMARKS[u.role] ?? {};
-    const meets = u.competencyScore.every((s) => {
-      const code = domainCodeById.get(s.domainId);
-      const required = code ? benchmark[code as keyof typeof benchmark] : undefined;
-      return required === undefined || s.level >= required;
-    });
-    if (meets) count++;
+    const userScores = scoresByUser.get(u.id);
+    if (!userScores || userScores.length === 0) continue;
+    if (meetsBenchmark(u.role, userScores, domainCodeById)) count++;
   }
   return count;
 }
 
 export async function getOfficeReadiness() {
-  const domains = await prisma.competencyDomain.findMany();
-  const domainCodeById = new Map(domains.map((d) => [d.id, d.code]));
+  const { data: domainsData } = await db.from("CompetencyDomain").select("*");
+  const domainCodeById = new Map(((domainsData ?? []) as CompetencyDomainRow[]).map((d) => [d.id, d.code]));
 
-  const results: { name: string; staff: number; pct: number }[] = [];
-  for (const office of OFFICES) {
-    const users = await prisma.user.findMany({
-      where: { office },
-      select: { id: true, role: true, competencyScore: { where: { isCurrent: true } } },
-    });
-    const assessed = users.filter((u) => u.competencyScore.length > 0);
-    const meeting = assessed.filter((u) => {
-      const benchmark = ROLE_BENCHMARKS[u.role] ?? {};
-      return u.competencyScore.every((s) => {
-        const code = domainCodeById.get(s.domainId);
-        const required = code ? benchmark[code as keyof typeof benchmark] : undefined;
-        return required === undefined || s.level >= required;
-      });
-    });
-    results.push({
-      name: office,
-      staff: users.length,
-      pct: assessed.length ? Math.round((meeting.length / assessed.length) * 100) : 0,
-    });
+  const { data: usersData } = await db.from("User").select("id, role, office").in("office", [...OFFICES]);
+  const users = (usersData ?? []) as { id: string; role: string; office: string }[];
+
+  const { data: scoresData } = await db.from("CompetencyScore").select("userId, domainId, level").eq("isCurrent", true);
+  const scoresByUser = new Map<string, { domainId: string; level: number }[]>();
+  for (const s of (scoresData ?? []) as { userId: string; domainId: string; level: number }[]) {
+    const arr = scoresByUser.get(s.userId) ?? [];
+    arr.push(s);
+    scoresByUser.set(s.userId, arr);
   }
-  return results;
+
+  return OFFICES.map((office) => {
+    const officeUsers = users.filter((u) => u.office === office);
+    let assessedCount = 0;
+    let meetingCount = 0;
+    for (const u of officeUsers) {
+      const userScores = scoresByUser.get(u.id);
+      if (!userScores || userScores.length === 0) continue;
+      assessedCount++;
+      if (meetsBenchmark(u.role, userScores, domainCodeById)) meetingCount++;
+    }
+    return { name: office, staff: officeUsers.length, pct: assessedCount ? Math.round((meetingCount / assessedCount) * 100) : 0 };
+  });
 }
 
 export async function getTopSystemGaps() {
-  const domains = await prisma.competencyDomain.findMany({ orderBy: { order: "asc" } });
-  const scores = await prisma.competencyScore.findMany({
-    where: { isCurrent: true },
-    include: { user: true },
-  });
+  const { data: domainsData } = await db.from("CompetencyDomain").select("*").order("order", { ascending: true });
+  const domains = (domainsData ?? []) as CompetencyDomainRow[];
+
+  const { data: scoresData } = await db
+    .from("CompetencyScore")
+    .select("userId, domainId, level, user:User(role)")
+    .eq("isCurrent", true);
+  const scores = (scoresData ?? []) as unknown as { userId: string; domainId: string; level: number; user: { role: string } | null }[];
 
   const counts = new Map<string, number>();
   for (const s of scores) {
+    if (!s.user) continue;
     const benchmark = ROLE_BENCHMARKS[s.user.role] ?? {};
     const domain = domains.find((d) => d.id === s.domainId);
     if (!domain) continue;
@@ -161,9 +198,10 @@ export async function getPathProjection(userId: string, pathCourseIds: string[])
   const gaps = await getGapAnalysis(userId);
   const currentIndex = Math.round((gaps.reduce((s, g) => s + g.current, 0) / gaps.length / 5) * 100);
 
-  const domains = await prisma.competencyDomain.findMany();
-  const links = await prisma.courseDomain.findMany({ where: { courseId: { in: pathCourseIds } } });
-  const touchedDomainIds = new Set(links.map((l) => l.domainId));
+  const { data: domainsData } = await db.from("CompetencyDomain").select("*");
+  const domains = domainsData ?? [];
+  const { data: linksData } = await db.from("CourseDomain").select("domainId").in("courseId", pathCourseIds);
+  const touchedDomainIds = new Set((linksData ?? []).map((l) => l.domainId as string));
 
   const projectedLevels = gaps.map((g) => (touchedDomainIds.has(g.domainId) ? Math.max(g.current, g.required) : g.current));
   const projectedIndex = Math.round((projectedLevels.reduce((s, l) => s + l, 0) / projectedLevels.length / 5) * 100);

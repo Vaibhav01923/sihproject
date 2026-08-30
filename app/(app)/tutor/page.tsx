@@ -1,5 +1,5 @@
 import { getCurrentUser } from "@/lib/auth";
-import { prisma } from "@/lib/db";
+import { db } from "@/lib/db";
 import PageHeader from "@/components/PageHeader";
 import { llmAvailable } from "@/lib/llm/quizgen";
 import TutorClient from "./TutorClient";
@@ -9,18 +9,24 @@ export default async function TutorPage({ searchParams }: { searchParams: Promis
   if (!user) return null;
   const { doc } = await searchParams;
 
-  const documents = await prisma.document.findMany({
-    where: { userId: user.id, status: "PARSED" },
-    orderBy: { uploadedAt: "desc" },
-  });
+  const { data: documentsData } = await db
+    .from("Document")
+    .select("*")
+    .eq("userId", user.id)
+    .eq("status", "PARSED")
+    .order("uploadedAt", { ascending: false });
+  const documents = documentsData ?? [];
   const selected = documents.find((d) => d.id === doc) ?? documents[0] ?? null;
 
-  const history = selected
-    ? await prisma.chatMessage.findMany({
-        where: { documentId: selected.id, userId: user.id },
-        orderBy: { createdAt: "asc" },
-      })
-    : [];
+  const { data: historyData } = selected
+    ? await db
+        .from("ChatMessage")
+        .select("*")
+        .eq("documentId", selected.id)
+        .eq("userId", user.id)
+        .order("createdAt", { ascending: true })
+    : { data: [] };
+  const history = historyData ?? [];
 
   return (
     <div>

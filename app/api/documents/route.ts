@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/db";
+import { db, unwrap } from "@/lib/db";
+import { newId } from "@/lib/id";
 import { requireUser, AuthError } from "@/lib/auth";
 import { estimateConceptCount } from "@/lib/llm/quizgen";
 
@@ -48,18 +49,23 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Couldn't extract enough text from this file" }, { status: 400 });
     }
 
-    const document = await prisma.document.create({
-      data: {
-        userId: user.id,
-        filename: file.name,
-        mimeType: file.type || "text/plain",
-        sizeBytes: file.size,
-        pageCount,
-        conceptCount: estimateConceptCount(text),
-        extractedText: text,
-        status: "PARSED",
-      },
-    });
+    const document: { id: string } = unwrap(
+      await db
+        .from("Document")
+        .insert({
+          id: newId(),
+          userId: user.id,
+          filename: file.name,
+          mimeType: file.type || "text/plain",
+          sizeBytes: file.size,
+          pageCount,
+          conceptCount: estimateConceptCount(text),
+          extractedText: text,
+          status: "PARSED",
+        })
+        .select("id")
+        .single()
+    );
 
     return NextResponse.json({ id: document.id });
   } catch (e) {

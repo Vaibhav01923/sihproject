@@ -1,6 +1,7 @@
 import { getCurrentUser } from "@/lib/auth";
-import { prisma } from "@/lib/db";
+import { db } from "@/lib/db";
 import { getOrCreateAttempt, getNextQuestion, getCoverage } from "@/lib/assessment";
+import type { AssessmentAttemptRow } from "@/lib/schema";
 import PageHeader from "@/components/PageHeader";
 import AssessmentClient from "./AssessmentClient";
 import RetakeButton from "./RetakeButton";
@@ -9,10 +10,14 @@ export default async function AssessmentPage() {
   const user = await getCurrentUser();
   if (!user) return null;
 
-  const latest = await prisma.assessmentAttempt.findFirst({
-    where: { userId: user.id },
-    orderBy: { startedAt: "desc" },
-  });
+  const { data: latestData } = await db
+    .from("AssessmentAttempt")
+    .select("*")
+    .eq("userId", user.id)
+    .order("startedAt", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  const latest = latestData as AssessmentAttemptRow | null;
 
   if (!latest || latest.status === "COMPLETED") {
     return (

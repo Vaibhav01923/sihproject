@@ -1,11 +1,11 @@
 // Applies manual review fixes to the LLM-drafted question bank, then merges
-// it with the hand-written original 24 into prisma/questionData.ts. See the
+// it with the hand-written original 24 into db/questionData.ts. See the
 // review notes in the conversation for why each patch below exists - these
 // are answer-key bugs and ambiguous options found by manual review, not
 // stylistic nitpicks.
 
 import { readFileSync, writeFileSync } from "fs";
-import { QUESTIONS as ORIGINAL } from "../prisma/questionData";
+import { QUESTIONS as ORIGINAL } from "../db/questionData";
 
 type Draft = {
   domain: string;
@@ -113,5 +113,5 @@ const originalBlock = ORIGINAL.map(emit).join("\n");
 const draftBlock = draft.map(emit).join("\n");
 
 const out = header + originalBlock + "\n" + draftBlock + "\n];\n";
-writeFileSync("prisma/questionData.ts", out);
-console.log(`Wrote ${ORIGINAL.length + draft.length} total questions to prisma/questionData.ts`);
+writeFileSync("db/questionData.ts", out);
+console.log(`Wrote ${ORIGINAL.length + draft.length} total questions to db/questionData.ts`);

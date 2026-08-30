@@ -1,11 +1,10 @@
-import { PrismaClient } from "@prisma/client";
+import { db } from "../lib/db";
+import { newId } from "../lib/id";
 import bcrypt from "bcryptjs";
 import { DOMAINS, OFFICES, ROLE_BENCHMARKS, ROLES } from "../lib/domains";
 import { generateHeuristic } from "../lib/llm/quizgen";
 import { Difficulty, CourseSource, GenStatus } from "../lib/types";
 import { QUESTIONS } from "./questionData";
-
-const prisma = new PrismaClient();
 
 const COURSES: {
   title: string;
@@ -164,76 +163,75 @@ Chapter 9: Confidentiality
 All individual schedules collected under this survey are protected under the Statistics Act framework. Data collected is used only for statistical purposes, and no individual response may be disclosed in any form that could identify the respondent. Any published table with a small, dominated cell must be suppressed or aggregated before release.`;
 
 async function main() {
-  const existing = await prisma.competencyDomain.count();
-  if (existing > 0) {
-    console.log("Already seeded (CompetencyDomain rows exist). Skipping. Run `npx prisma migrate reset` to start over.");
+  const { count: existing } = await db.from("CompetencyDomain").select("*", { count: "exact", head: true });
+  if (existing && existing > 0) {
+    console.log("Already seeded (CompetencyDomain rows exist). Skipping. Clear the tables in Supabase to start over.");
     return;
   }
 
   console.log("Seeding competency domains...");
-  const domainRecords = await Promise.all(
-    DOMAINS.map((d, i) =>
-      prisma.competencyDomain.create({
-        data: { code: d.code, name: d.name, description: d.description, order: i },
-      })
-    )
-  );
-  const domainByCode = new Map(domainRecords.map((d) => [d.code, d]));
+  const domainRecords = DOMAINS.map((d, i) => ({ id: newId(), code: d.code, name: d.name, description: d.description, order: i }));
+  let error = (await db.from("CompetencyDomain").insert(domainRecords)).error;
+  if (error) throw new Error(error.message);
+  const domainByCode = new Map<string, (typeof domainRecords)[number]>(domainRecords.map((d) => [d.code, d]));
 
   console.log("Seeding role benchmarks...");
-  for (const role of ROLES) {
-    const levels = ROLE_BENCHMARKS[role];
-    for (const [code, requiredLevel] of Object.entries(levels)) {
-      await prisma.roleBenchmark.create({
-        data: { role, domainId: domainByCode.get(code)!.id, requiredLevel },
-      });
-    }
-  }
+  const benchmarkRecords = ROLES.flatMap((role) =>
+    Object.entries(ROLE_BENCHMARKS[role]).map(([code, requiredLevel]) => ({
+      id: newId(),
+      role,
+      domainId: domainByCode.get(code)!.id,
+      requiredLevel,
+    }))
+  );
+  error = (await db.from("RoleBenchmark").insert(benchmarkRecords)).error;
+  if (error) throw new Error(error.message);
 
   console.log("Seeding question bank...");
-  const questionRecords = await Promise.all(
-    QUESTIONS.map((q) =>
-      prisma.question.create({
-        data: {
-          domainId: domainByCode.get(q.domain)!.id,
-          text: q.text,
-          options: JSON.stringify(q.options),
-          correctIndex: q.correctIndex,
-          difficulty: q.difficulty,
-          explanation: q.explanation,
-        },
-      })
-    )
-  );
+  const questionRecords = QUESTIONS.map((q) => ({
+    id: newId(),
+    domainId: domainByCode.get(q.domain)!.id,
+    text: q.text,
+    options: JSON.stringify(q.options),
+    correctIndex: q.correctIndex,
+    difficulty: q.difficulty,
+    explanation: q.explanation,
+  }));
+  error = (await db.from("Question").insert(questionRecords)).error;
+  if (error) throw new Error(error.message);
 
   console.log("Seeding course catalog...");
-  for (const c of COURSES) {
-    await prisma.course.create({
-      data: {
-        title: c.title,
-        description: c.description,
-        source: c.source,
-        hours: c.hours,
-        mandatory: c.mandatory ?? false,
-        domains: {
-          create: c.domains.map((d) => ({ domainId: domainByCode.get(d.code)!.id, weight: d.weight })),
-        },
-      },
-    });
-  }
+  const courseRecords = COURSES.map((c) => ({
+    id: newId(),
+    title: c.title,
+    description: c.description,
+    source: c.source,
+    hours: c.hours,
+    mandatory: c.mandatory ?? false,
+  }));
+  error = (await db.from("Course").insert(courseRecords)).error;
+  if (error) throw new Error(error.message);
+  const courseDomainRecords = COURSES.flatMap((c, i) =>
+    c.domains.map((d) => ({ id: newId(), courseId: courseRecords[i].id, domainId: domainByCode.get(d.code)!.id, weight: d.weight }))
+  );
+  error = (await db.from("CourseDomain").insert(courseDomainRecords)).error;
+  if (error) throw new Error(error.message);
 
   console.log("Seeding demo user (A. Venkatesan)...");
   const demoPasswordHash = await bcrypt.hash("demo1234", 10);
-  const demoUser = await prisma.user.create({
-    data: {
+  const demoUserId = newId();
+  error = (
+    await db.from("User").insert({
+      id: demoUserId,
       name: "A. Venkatesan",
       employeeId: "MOSPI-00001",
       passwordHash: demoPasswordHash,
       role: "Deputy Director, NSO Field Ops",
       office: "NSO — Field Operations Division",
       isAdmin: true,
-    },
-  });
+    })
+  ).error;
+  if (error) throw new Error(error.message);
 
   // Demo diagnostic: correctness pattern per domain chosen to land on the
   // same current levels used throughout the original design mock, so the
@@ -249,12 +247,16 @@ async function main() {
     "NSTA-C8": { EASY: true, MODERATE: true, HARD: false }, // -> level 3
   };
 
-  const attempt = await prisma.assessmentAttempt.create({
-    data: { userId: demoUser.id, status: "COMPLETED", completedAt: new Date() },
-  });
+  const demoAttemptId = newId();
+  error = (
+    await db.from("AssessmentAttempt").insert({ id: demoAttemptId, userId: demoUserId, status: "COMPLETED", completedAt: new Date().toISOString() })
+  ).error;
+  if (error) throw new Error(error.message);
 
   let orderIndex = 0;
   const TIER_WEIGHT: Record<Difficulty, number> = { EASY: 1, MODERATE: 2, HARD: 3 };
+  const demoAnswers: { id: string; attemptId: string; questionId: string; domainId: string; orderIndex: number; pickedIndex: number; correct: boolean; difficulty: Difficulty }[] = [];
+  const demoScores: { id: string; userId: string; domainId: string; attemptId: string; level: number; ratio: number; isCurrent: boolean }[] = [];
   for (const domain of DOMAINS) {
     const pattern = DEMO_PATTERN[domain.code];
     let earned = 0;
@@ -262,69 +264,86 @@ async function main() {
       const q = questionRecords.find((q) => q.domainId === domainByCode.get(domain.code)!.id && q.difficulty === difficulty)!;
       const correct = pattern[difficulty];
       const pickedIndex = correct ? q.correctIndex : (q.correctIndex + 1) % 4;
-      await prisma.assessmentAnswer.create({
-        data: {
-          attemptId: attempt.id,
-          questionId: q.id,
-          domainId: q.domainId,
-          orderIndex: orderIndex++,
-          pickedIndex,
-          correct,
-          difficulty,
-        },
+      demoAnswers.push({
+        id: newId(),
+        attemptId: demoAttemptId,
+        questionId: q.id,
+        domainId: q.domainId,
+        orderIndex: orderIndex++,
+        pickedIndex,
+        correct,
+        difficulty,
       });
       if (correct) earned += TIER_WEIGHT[difficulty];
     }
     const ratio = earned / 6;
     const level = Math.min(5, Math.max(1, Math.round(1 + ratio * 4)));
-    await prisma.competencyScore.create({
-      data: { userId: demoUser.id, domainId: domainByCode.get(domain.code)!.id, attemptId: attempt.id, level, ratio, isCurrent: true },
-    });
+    demoScores.push({ id: newId(), userId: demoUserId, domainId: domainByCode.get(domain.code)!.id, attemptId: demoAttemptId, level, ratio, isCurrent: true });
   }
+  error = (await db.from("AssessmentAnswer").insert(demoAnswers)).error;
+  if (error) throw new Error(error.message);
+  error = (await db.from("CompetencyScore").insert(demoScores)).error;
+  if (error) throw new Error(error.message);
 
   console.log("Generating demo learning path...");
   const { generateLearningPath } = await import("../lib/recommend");
-  const path = await generateLearningPath(demoUser.id, attempt.id);
+  const path = await generateLearningPath(demoUserId, demoAttemptId);
   if (path.items[0]) {
-    await prisma.enrollment.update({
-      where: { userId_courseId: { userId: demoUser.id, courseId: path.items[0].courseId } },
-      data: { status: "IN_PROGRESS", progressPct: 62 },
-    });
+    error = (
+      await db
+        .from("Enrollment")
+        .update({ status: "IN_PROGRESS", progressPct: 62 })
+        .eq("userId", demoUserId)
+        .eq("courseId", path.items[0].courseId)
+    ).error;
+    if (error) throw new Error(error.message);
   }
 
   // Baseline mandatory training the demo user completed before onboarding
   // onto this platform, so the overview dashboard isn't empty on first look.
-  const priorCourses = await prisma.course.findMany({ where: { mandatory: true } });
+  const priorCourses = courseRecords.filter((c) => c.mandatory);
   for (const course of priorCourses) {
-    await prisma.enrollment.upsert({
-      where: { userId_courseId: { userId: demoUser.id, courseId: course.id } },
-      create: { userId: demoUser.id, courseId: course.id, status: "COMPLETED", progressPct: 100, completedAt: new Date() },
-      update: { status: "COMPLETED", progressPct: 100, completedAt: new Date() },
-    });
+    const { data: existingEnrollment } = await db
+      .from("Enrollment")
+      .select("id")
+      .eq("userId", demoUserId)
+      .eq("courseId", course.id)
+      .maybeSingle();
+    const payload = { status: "COMPLETED", progressPct: 100, completedAt: new Date().toISOString() };
+    if (existingEnrollment) {
+      error = (await db.from("Enrollment").update(payload).eq("userId", demoUserId).eq("courseId", course.id)).error;
+    } else {
+      error = (await db.from("Enrollment").insert({ id: newId(), userId: demoUserId, courseId: course.id, ...payload })).error;
+    }
+    if (error) throw new Error(error.message);
   }
 
   console.log("Seeding synthetic office cohort for admin analytics...");
   let empCounter = 2;
   for (const office of OFFICES) {
     const readiness = OFFICE_READINESS[office];
-    for (let i = 0; i < 15; i++) {
+    const namedUsers = Array.from({ length: 15 }, () => {
       const role = ROLES[Math.floor(Math.random() * ROLES.length)];
       const first = FIRST_NAMES[Math.floor(Math.random() * FIRST_NAMES.length)];
       const last = LAST_NAMES[Math.floor(Math.random() * LAST_NAMES.length)];
-      const user = await prisma.user.create({
-        data: {
-          name: `${first} ${last}`,
-          employeeId: `MOSPI-${String(empCounter++).padStart(5, "0")}`,
-          passwordHash: demoPasswordHash,
-          role,
-          office,
-        },
-      });
+      return {
+        id: newId(),
+        name: `${first} ${last}`,
+        employeeId: `MOSPI-${String(empCounter++).padStart(5, "0")}`,
+        passwordHash: demoPasswordHash,
+        role,
+        office,
+      };
+    });
+    error = (await db.from("User").insert(namedUsers)).error;
+    if (error) throw new Error(error.message);
 
+    const scoreRecords: { id: string; userId: string; domainId: string; level: number; ratio: number; isCurrent: boolean }[] = [];
+    for (const u of namedUsers) {
       const wasDiagnosed = Math.random() < 0.66;
       if (!wasDiagnosed) continue;
 
-      const benchmark = ROLE_BENCHMARKS[role];
+      const benchmark = ROLE_BENCHMARKS[u.role];
       const meetsBenchmark = Math.random() < readiness;
       const weakDomainCount = meetsBenchmark ? 0 : 1 + Math.floor(Math.random() * 4);
       const weakDomains = new Set(
@@ -336,16 +355,19 @@ async function main() {
         const isWeak = weakDomains.has(domain.code);
         const drop = isWeak ? 1 + Math.floor(Math.random() * 2) : 0;
         const level = Math.min(5, Math.max(1, required - drop));
-        await prisma.competencyScore.create({
-          data: {
-            userId: user.id,
-            domainId: domainByCode.get(domain.code)!.id,
-            level,
-            ratio: (level - 1) / 4,
-            isCurrent: true,
-          },
+        scoreRecords.push({
+          id: newId(),
+          userId: u.id,
+          domainId: domainByCode.get(domain.code)!.id,
+          level,
+          ratio: (level - 1) / 4,
+          isCurrent: true,
         });
       }
+    }
+    if (scoreRecords.length > 0) {
+      error = (await db.from("CompetencyScore").insert(scoreRecords)).error;
+      if (error) throw new Error(error.message);
     }
   }
 
@@ -354,9 +376,11 @@ async function main() {
   const drafts = generateHeuristic(SAMPLE_DOCUMENT_TEXT, domainRefs, 5, 214);
   const conceptCount = new Set(SAMPLE_DOCUMENT_TEXT.match(/\b[A-Z][a-zA-Z]{4,}\b/g)).size;
 
-  const document = await prisma.document.create({
-    data: {
-      userId: demoUser.id,
+  const sampleDocumentId = newId();
+  error = (
+    await db.from("Document").insert({
+      id: sampleDocumentId,
+      userId: demoUserId,
       filename: "NSS 78th Round — Instruction Manual.pdf",
       mimeType: "application/pdf",
       sizeBytes: 842_213,
@@ -364,32 +388,30 @@ async function main() {
       conceptCount,
       extractedText: SAMPLE_DOCUMENT_TEXT,
       status: "PARSED",
-    },
-  });
+    })
+  ).error;
+  if (error) throw new Error(error.message);
 
-  for (const [i, d] of drafts.entries()) {
-    await prisma.generatedQuestion.create({
-      data: {
-        documentId: document.id,
-        domainId: d.domainId,
-        text: d.text,
-        options: JSON.stringify(d.options),
-        correctIndex: d.correctIndex,
-        difficulty: d.difficulty,
-        page: d.page,
-        status: (i < 3 ? "APPROVED" : "DRAFT") satisfies GenStatus,
-        generatedBy: "heuristic",
-      },
-    });
-  }
+  const generatedQuestionRecords = drafts.map((d, i) => ({
+    id: newId(),
+    documentId: sampleDocumentId,
+    domainId: d.domainId,
+    text: d.text,
+    options: JSON.stringify(d.options),
+    correctIndex: d.correctIndex,
+    difficulty: d.difficulty,
+    page: d.page,
+    status: (i < 3 ? "APPROVED" : "DRAFT") satisfies GenStatus,
+    generatedBy: "heuristic",
+  }));
+  error = (await db.from("GeneratedQuestion").insert(generatedQuestionRecords)).error;
+  if (error) throw new Error(error.message);
 
   console.log("Seed complete.");
   console.log(`Demo login -> Employee ID: MOSPI-00001, password: demo1234`);
 }
 
-main()
-  .catch((e) => {
-    console.error(e);
-    process.exit(1);
-  })
-  .finally(() => prisma.$disconnect());
+main().catch((e) => {
+  console.error(e);
+  process.exit(1);
+});

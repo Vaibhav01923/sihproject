@@ -1,5 +1,5 @@
 import { getCurrentUser } from "@/lib/auth";
-import { prisma } from "@/lib/db";
+import { db } from "@/lib/db";
 import PageHeader from "@/components/PageHeader";
 import StudioClient from "./StudioClient";
 
@@ -8,14 +8,25 @@ export default async function StudioPage({ searchParams }: { searchParams: Promi
   if (!user) return null;
   const { doc } = await searchParams;
 
-  const documents = await prisma.document.findMany({ where: { userId: user.id }, orderBy: { uploadedAt: "desc" } });
+  const { data: documentsData } = await db
+    .from("Document")
+    .select("*")
+    .eq("userId", user.id)
+    .order("uploadedAt", { ascending: false });
+  const documents = documentsData ?? [];
   const selected = documents.find((d) => d.id === doc) ?? documents[0] ?? null;
 
-  const domains = await prisma.competencyDomain.findMany({ orderBy: { order: "asc" } });
-  const domainNameById = new Map(domains.map((d) => [d.id, d.name]));
+  const { data: domainsData } = await db.from("CompetencyDomain").select("*").order("order", { ascending: true });
+  const domainNameById = new Map((domainsData ?? []).map((d) => [d.id, d.name]));
 
   const rawQuestions = selected
-    ? await prisma.generatedQuestion.findMany({ where: { documentId: selected.id }, orderBy: { createdAt: "asc" } })
+    ? (
+        await db
+          .from("GeneratedQuestion")
+          .select("*")
+          .eq("documentId", selected.id)
+          .order("createdAt", { ascending: true })
+      ).data ?? []
     : [];
 
   const questions = rawQuestions.map((q) => ({

@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/db";
+import { db } from "@/lib/db";
 import { verifyPassword, setSessionCookie } from "@/lib/auth";
 import { loginSchema } from "@/lib/validation";
+import type { UserRow } from "@/lib/schema";
 
 export async function POST(req: NextRequest) {
   const body = await req.json().catch(() => null);
@@ -11,11 +12,11 @@ export async function POST(req: NextRequest) {
   }
   const { employeeId, password } = parsed.data;
 
-  const user = await prisma.user.findUnique({ where: { employeeId } });
-  if (!user || !(await verifyPassword(password, user.passwordHash))) {
+  const { data: user } = await db.from("User").select("*").eq("employeeId", employeeId).maybeSingle();
+  if (!user || !(await verifyPassword(password, (user as UserRow).passwordHash))) {
     return NextResponse.json({ error: "Incorrect Employee ID or password" }, { status: 401 });
   }
 
-  await setSessionCookie(user.id);
+  await setSessionCookie((user as UserRow).id);
   return NextResponse.json({ ok: true });
 }
