@@ -12,7 +12,11 @@ export async function POST(req: NextRequest) {
   }
   const { employeeId, password } = parsed.data;
 
-  const { data: user } = await db.from("User").select("*").eq("employeeId", employeeId).maybeSingle();
+  const { data: user, error } = await db.from("User").select("*").eq("employeeId", employeeId).maybeSingle();
+  if (error) {
+    console.error("Login lookup failed:", error.message);
+    return NextResponse.json({ error: "Something went wrong signing you in. Please try again." }, { status: 500 });
+  }
   if (!user || !(await verifyPassword(password, (user as UserRow).passwordHash))) {
     return NextResponse.json({ error: "Incorrect Employee ID or password" }, { status: 401 });
   }
