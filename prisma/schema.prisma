@@ -3,14 +3,19 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
-// SQLite has no native enum type, so enum-like fields below are plain
-// Strings. The allowed values for each are documented inline and defined
-// as TS union types in lib/types.ts, which application code imports from
-// instead of @prisma/client.
+// Originally built on SQLite, which has no native enum type - hence the
+// enum-like fields below being plain Strings rather than real Prisma enums.
+// Migrated to Postgres for deployment (serverless functions have no
+// persistent local disk for a SQLite file to live on), but kept the string
+// fields as-is rather than converting to native enums, to avoid an
+// unrelated migration. The allowed values for each are documented inline
+// and defined as TS union types in lib/types.ts, which application code
+// imports from instead of @prisma/client.
 
 // --- Identity -------------------------------------------------------------
 
