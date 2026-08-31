@@ -12,7 +12,6 @@ export interface UserRow {
   role: string;
   office: string;
   isAdmin: boolean;
-  reportingOfficerId: string | null;
   createdAt: string;
 }
 
@@ -47,8 +46,6 @@ export interface AssessmentAttemptRow {
   status: string;
   startedAt: string;
   completedAt: string | null;
-  endorsedByUserId: string | null;
-  endorsedAt: string | null;
 }
 
 export interface AssessmentAnswerRow {

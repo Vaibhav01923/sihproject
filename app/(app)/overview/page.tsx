@@ -18,6 +18,7 @@ export default async function OverviewPage() {
   ]);
   const index = indexFromGaps(gaps);
   const repeatGaps = getRepeatGapDomains(gaps, courses);
+  const repeatGapCodes = new Set(repeatGaps.map((g) => g.code));
 
   const criticalCount = gaps.filter((g) => g.priority === "CRITICAL").length;
   const criticalNames = gaps.filter((g) => g.priority === "CRITICAL").map((g) => g.name).join(", ");
@@ -54,9 +55,8 @@ export default async function OverviewPage() {
         >
           <div style={{ fontSize: 13.5, lineHeight: 1.5 }}>
             <strong>Still showing a gap after completing the course:</strong>{" "}
-            {repeatGaps.map((g) => g.name).join(", ")}. Finishing a course doesn&apos;t update your tested level by
-            itself - retake the diagnostic to reflect what you&apos;ve learned, or revisit the material if the gap
-            persists.
+            {repeatGaps.map((g) => g.name).join(", ")}. Retake the diagnostic to reflect what you&apos;ve learned, or
+            use the Redo course button on the course below to go through it again.
           </div>
           <a href="/assessment" className="btn btn-outline btn-sm" style={{ flex: "0 0 auto" }}>
             Retake diagnostic
@@ -120,7 +120,13 @@ export default async function OverviewPage() {
                   <div style={{ fontSize: 14.5, fontWeight: 600, marginTop: 6, lineHeight: 1.3 }}>{c.title}</div>
                   <div style={{ fontSize: 12.5, color: "var(--ink-muted)", marginTop: 5 }}>{c.matchPct}% match to your gaps</div>
                   <div style={{ marginTop: 10, paddingTop: 10, borderTop: "1px solid #f1f2ed" }}>
-                    <CourseProgressControl courseId={c.id} source={c.source} enrollment={c.enrollment} compact />
+                    <CourseProgressControl
+                      courseId={c.id}
+                      source={c.source}
+                      enrollment={c.enrollment}
+                      stillGapped={repeatGapCodes.has(c.primaryDomainCode)}
+                      compact
+                    />
                   </div>
                 </div>
               ))}

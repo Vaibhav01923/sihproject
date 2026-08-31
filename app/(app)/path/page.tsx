@@ -64,6 +64,8 @@ async function PathBody({ userId, path }: { userId: string; path: NonNullable<Aw
   const enrollmentByCourseId = Object.fromEntries(enrollments.map((e) => [e.courseId, { status: e.status, progressPct: e.progressPct }]));
   const rankedCourses = await getRankedCourses(userId, gaps);
   const repeatGaps = getRepeatGapDomains(gaps, rankedCourses);
+  const repeatGapCodes = new Set(repeatGaps.map((g) => g.code));
+  const rankedByCourseId = new Map(rankedCourses.map((c) => [c.id, c]));
 
   return (
     <div>
@@ -79,9 +81,8 @@ async function PathBody({ userId, path }: { userId: string; path: NonNullable<Aw
           }}
         >
           <strong>Still showing a gap after completing the course:</strong> {repeatGaps.map((g) => g.name).join(", ")}
-          . These courses are still listed below because they&apos;re still the best match - but if you&apos;ve
-          already done them once, consider revisiting the material rather than just re-enrolling, and retake the
-          diagnostic once you have.
+          . Use the Redo course button on the affected course below to go through it again, then retake the
+          diagnostic to reflect what you&apos;ve learned.
         </div>
       )}
       <div style={{ display: "grid", gridTemplateColumns: "1fr 288px", gap: 20, alignItems: "start" }}>
@@ -119,7 +120,12 @@ async function PathBody({ userId, path }: { userId: string; path: NonNullable<Aw
               <div style={{ fontSize: 16, fontWeight: 600, marginTop: 8, letterSpacing: "-0.01em" }}>{p.course.title}</div>
               <div style={{ fontSize: 13.5, color: "var(--ink-muted)", marginTop: 5, lineHeight: 1.5 }}>{p.rationale}</div>
               <div style={{ marginTop: 12, paddingTop: 12, borderTop: "1px solid #f1f2ed" }}>
-                <CourseProgressControl courseId={p.courseId} source={p.course.source} enrollment={enrollmentByCourseId[p.courseId] ?? { status: "RECOMMENDED", progressPct: 0 }} />
+                <CourseProgressControl
+                  courseId={p.courseId}
+                  source={p.course.source}
+                  enrollment={enrollmentByCourseId[p.courseId] ?? { status: "RECOMMENDED", progressPct: 0 }}
+                  stillGapped={repeatGapCodes.has(rankedByCourseId.get(p.courseId)?.primaryDomainCode ?? "")}
+                />
               </div>
             </div>
           </div>

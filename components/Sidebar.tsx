@@ -17,7 +17,6 @@ const AUTHORING_AI: NavItem[] = [
   { id: "quizzes", key: "PQ", label: "Published quizzes", href: "/quizzes" },
   { id: "tutor", key: "AT", label: "AI tutor", href: "/tutor" },
 ];
-const TEAM: NavItem[] = [{ id: "team", key: "TM", label: "My team", href: "/team" }];
 const ADMINISTRATION: NavItem[] = [{ id: "admin", key: "AD", label: "Office analytics", href: "/admin" }];
 
 function initials(name: string) {
@@ -34,12 +33,10 @@ export default function Sidebar({
   name,
   role,
   isAdmin,
-  hasDirectReports,
 }: {
   name: string;
   role: string;
   isAdmin: boolean;
-  hasDirectReports: boolean;
 }) {
   const pathname = usePathname();
   const router = useRouter();
@@ -47,7 +44,6 @@ export default function Sidebar({
   const sections = [
     { title: "My development", items: MY_DEVELOPMENT },
     { title: "Authoring & AI", items: AUTHORING_AI },
-    ...(hasDirectReports ? [{ title: "Team", items: TEAM }] : []),
     ...(isAdmin ? [{ title: "Administration", items: ADMINISTRATION }] : []),
   ];
 

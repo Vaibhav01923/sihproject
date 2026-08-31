@@ -12,13 +12,16 @@ export default function CatalogClient({
   courses,
   criticalDomainCodes,
   enrollmentByCourseId,
+  repeatGapDomainCodes,
 }: {
   courses: RankedCourse[];
   criticalDomainCodes: string[];
   enrollmentByCourseId: Record<string, EnrollmentInfo>;
+  repeatGapDomainCodes: string[];
 }) {
   const [filter, setFilter] = useState<(typeof FILTERS)[number]>("Recommended for you");
   const critical = new Set(criticalDomainCodes);
+  const repeatGapped = new Set(repeatGapDomainCodes);
 
   const filtered = courses.filter((c) => {
     switch (filter) {
@@ -80,7 +83,13 @@ export default function CatalogClient({
               <div style={{ fontSize: 13, color: "var(--ink-muted)", lineHeight: 1.5, flex: 1 }}>{c.description}</div>
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", borderTop: "1px solid #f1f2ed", paddingTop: 11, gap: 10 }}>
                 <span style={{ fontSize: 12, color: c.matchPct >= 70 ? "var(--green)" : "var(--amber)", fontWeight: 600, flex: "0 0 auto" }}>{c.matchPct}% match</span>
-                <CourseProgressControl courseId={c.id} source={c.source} enrollment={enrollment} compact />
+                <CourseProgressControl
+                  courseId={c.id}
+                  source={c.source}
+                  enrollment={enrollment}
+                  stillGapped={repeatGapped.has(c.primaryDomainCode)}
+                  compact
+                />
               </div>
             </div>
           );

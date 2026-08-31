@@ -5,20 +5,15 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { OFFICES, ROLES } from "@/lib/domains";
 
-type Officer = { id: string; name: string; employeeId: string; office: string };
-
-export default function RegisterForm({ officers }: { officers: Officer[] }) {
+export default function RegisterForm() {
   const router = useRouter();
   const [name, setName] = useState("");
   const [employeeId, setEmployeeId] = useState("");
   const [password, setPassword] = useState("");
   const [role, setRole] = useState<string>(ROLES[0]);
   const [office, setOffice] = useState<string>(OFFICES[0]);
-  const [reportingOfficerId, setReportingOfficerId] = useState<string>("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-
-  const candidateOfficers = officers.filter((o) => o.office === office);
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -28,7 +23,7 @@ export default function RegisterForm({ officers }: { officers: Officer[] }) {
       const res = await fetch("/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, employeeId, password, role, office, reportingOfficerId: reportingOfficerId || null }),
+        body: JSON.stringify({ name, employeeId, password, role, office }),
       });
       const data = await res.json();
       if (!res.ok) {
@@ -102,28 +97,10 @@ export default function RegisterForm({ officers }: { officers: Officer[] }) {
           </div>
           <div className="field">
             <label htmlFor="office">Office</label>
-            <select
-              id="office"
-              value={office}
-              onChange={(e) => {
-                setOffice(e.target.value);
-                setReportingOfficerId(""); // clear - a previously picked officer may belong to a different office
-              }}
-            >
+            <select id="office" value={office} onChange={(e) => setOffice(e.target.value)}>
               {OFFICES.map((o) => (
                 <option key={o} value={o}>
                   {o}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div className="field">
-            <label htmlFor="reportingOfficer">Reporting officer</label>
-            <select id="reportingOfficer" value={reportingOfficerId} onChange={(e) => setReportingOfficerId(e.target.value)}>
-              <option value="">No reporting officer — I am the senior-most officer in my office</option>
-              {candidateOfficers.map((o) => (
-                <option key={o.id} value={o.id}>
-                  {o.name} ({o.employeeId})
                 </option>
               ))}
             </select>

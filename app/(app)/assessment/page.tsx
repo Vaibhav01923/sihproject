@@ -20,12 +20,6 @@ export default async function AssessmentPage() {
   const latest = latestData as AssessmentAttemptRow | null;
 
   if (!latest || latest.status === "COMPLETED") {
-    let endorserName: string | null = null;
-    if (latest?.endorsedByUserId) {
-      const { data: endorser } = await db.from("User").select("name").eq("id", latest.endorsedByUserId).maybeSingle();
-      endorserName = endorser?.name ?? null;
-    }
-
     return (
       <div>
         <PageHeader
@@ -41,19 +35,6 @@ export default async function AssessmentPage() {
                 Completed {latest.completedAt ? new Date(latest.completedAt).toLocaleDateString("en-IN") : ""}. Your gap
                 analysis and learning path are based on those results.
               </p>
-              {latest.completedAt && (
-                <div className="igot-badge" style={{ margin: "18px auto 0" }}>
-                  <span className={`dot${latest.endorsedByUserId ? "" : " simulated"}`} />
-                  <div>
-                    <div className="title">{latest.endorsedByUserId ? "Evaluated" : "Pending endorsement"}</div>
-                    <div className="sub">
-                      {latest.endorsedByUserId
-                        ? `Endorsed by ${endorserName ?? "your reporting officer"} on ${new Date(latest.endorsedAt!).toLocaleDateString("en-IN")}`
-                        : "Pending your reporting officer's endorsement"}
-                    </div>
-                  </div>
-                </div>
-              )}
               <div style={{ display: "flex", gap: 10, justifyContent: "center", marginTop: 20 }}>
                 <a href="/gaps" className="btn btn-outline">
                   View gap analysis

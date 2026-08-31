@@ -1,5 +1,5 @@
 import { getCurrentUser } from "@/lib/auth";
-import { getRankedCourses, getGapAnalysis } from "@/lib/recommend";
+import { getRankedCourses, getGapAnalysis, getRepeatGapDomains } from "@/lib/recommend";
 import PageHeader from "@/components/PageHeader";
 import CatalogClient from "./CatalogClient";
 
@@ -9,6 +9,7 @@ export default async function CatalogPage() {
 
   const gaps = await getGapAnalysis(user.id);
   const courses = await getRankedCourses(user.id, gaps);
+  const repeatGapCodes = getRepeatGapDomains(gaps, courses).map((g) => g.code);
 
   const criticalDomainCodes = new Set(gaps.filter((g) => g.priority === "CRITICAL").map((g) => g.code));
   // getRankedCourses already carries each course's enrollment status - no
@@ -24,7 +25,12 @@ export default async function CatalogPage() {
         heading="Course catalog"
         subheading="Courses pulled from the iGOT Karmayogi catalog, scored against your gap profile."
       />
-      <CatalogClient courses={courses} criticalDomainCodes={[...criticalDomainCodes]} enrollmentByCourseId={enrollmentByCourseId} />
+      <CatalogClient
+        courses={courses}
+        criticalDomainCodes={[...criticalDomainCodes]}
+        enrollmentByCourseId={enrollmentByCourseId}
+        repeatGapDomainCodes={repeatGapCodes}
+      />
     </div>
   );
 }
