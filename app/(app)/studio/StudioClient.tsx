@@ -16,7 +16,17 @@ type Q = {
   domainName: string | null;
 };
 
-export default function StudioClient({ documents, selectedId, questions }: { documents: Doc[]; selectedId: string | null; questions: Q[] }) {
+export default function StudioClient({
+  documents,
+  selectedId,
+  questions,
+  isAdmin,
+}: {
+  documents: Doc[];
+  selectedId: string | null;
+  questions: Q[];
+  isAdmin: boolean;
+}) {
   const router = useRouter();
   const fileInput = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
@@ -25,6 +35,12 @@ export default function StudioClient({ documents, selectedId, questions }: { doc
   const [genError, setGenError] = useState<string | null>(null);
   const [count, setCount] = useState(8);
   const [publishing, setPublishing] = useState(false);
+  const [toast, setToast] = useState<string | null>(null);
+
+  function showToast(message: string) {
+    setToast(message);
+    setTimeout(() => setToast(null), 3500);
+  }
 
   const selected = documents.find((d) => d.id === selectedId) ?? null;
 
@@ -89,7 +105,11 @@ export default function StudioClient({ documents, selectedId, questions }: { doc
         alert(data.error ?? "Publish failed");
         return;
       }
-      router.refresh();
+      showToast(`Pushed successfully - ${data.published} question${data.published === 1 ? "" : "s"} published to iGOT Karmayogi.`);
+      // router.refresh() re-renders this component with fresh server data,
+      // which resets local state (including the toast) well before its
+      // timeout - delay it so the toast is actually readable first.
+      setTimeout(() => router.refresh(), 1800);
     } finally {
       setPublishing(false);
     }
@@ -127,8 +147,30 @@ ${q.options.map((o, oi) => `        <simpleChoice identifier="${"ABCD"[oi]}">${e
   const publishedCount = questions.filter((q) => q.status === "PUBLISHED").length;
 
   return (
-    <div style={{ display: "grid", gridTemplateColumns: "300px 1fr", gap: 20, alignItems: "start" }}>
-      <aside className="card" style={{ padding: "20px 22px" }}>
+    <>
+      {toast && (
+        <div
+          role="status"
+          style={{
+            position: "fixed",
+            bottom: 24,
+            right: 24,
+            zIndex: 50,
+            background: "var(--sidebar)",
+            color: "var(--sidebar-text)",
+            borderRadius: 7,
+            padding: "13px 18px",
+            fontSize: 13.5,
+            fontWeight: 500,
+            boxShadow: "0 8px 24px rgba(0,0,0,0.18)",
+            maxWidth: 320,
+          }}
+        >
+          {toast}
+        </div>
+      )}
+      <div style={{ display: "grid", gridTemplateColumns: "300px 1fr", gap: 20, alignItems: "start" }}>
+        <aside className="card" style={{ padding: "20px 22px" }}>
         <h2 className="section-title" style={{ marginBottom: 14, fontSize: 15 }}>
           Source material
         </h2>
@@ -231,11 +273,21 @@ ${q.options.map((o, oi) => `        <simpleChoice identifier="${"ABCD"[oi]}">${e
                 <button className="btn btn-outline btn-sm" onClick={exportQti} disabled={approvedCount + publishedCount === 0}>
                   Export QTI
                 </button>
-                <button className="btn btn-dark btn-sm" onClick={publish} disabled={publishing || approvedCount === 0}>
+                <button
+                  className="btn btn-dark btn-sm"
+                  onClick={publish}
+                  disabled={publishing || approvedCount === 0 || !isAdmin}
+                  title={isAdmin ? undefined : "Only an administrator can publish to iGOT Karmayogi"}
+                >
                   {publishing ? "Publishing…" : "Publish to Karmayogi"}
                 </button>
               </div>
             </div>
+            {!isAdmin && (
+              <p style={{ fontSize: 12, color: "var(--ink-faint)", margin: "-6px 0 14px", textAlign: "right" }}>
+                Publishing to iGOT Karmayogi is restricted to administrators.
+              </p>
+            )}
             <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
               {questions.map((q) => (
                 <div key={q.id} className="card rise" style={{ padding: "18px 20px" }}>
@@ -293,7 +345,8 @@ ${q.options.map((o, oi) => `        <simpleChoice identifier="${"ABCD"[oi]}">${e
           </div>
         )}
       </section>
-    </div>
+      </div>
+    </>
   );
 }
 

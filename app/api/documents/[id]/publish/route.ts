@@ -9,6 +9,13 @@ export async function POST(_req: Request, { params }: { params: Promise<{ id: st
     const user = await requireUser();
     const { id } = await params;
 
+    // Publishing puts content in front of every officer on the national
+    // platform, not just this user - restrict it the same way Office
+    // Analytics is restricted, rather than letting any employee push.
+    if (!user.isAdmin) {
+      return NextResponse.json({ error: "Only an administrator can publish to iGOT Karmayogi" }, { status: 403 });
+    }
+
     const { data: document } = await db.from("Document").select("*").eq("id", id).maybeSingle();
     if (!document || (document as DocumentRow).userId !== user.id) {
       return NextResponse.json({ error: "Document not found" }, { status: 404 });

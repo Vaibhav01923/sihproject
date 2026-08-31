@@ -58,6 +58,7 @@ export default async function StudioPage({ searchParams }: { searchParams: Promi
         }))}
         selectedId={selected?.id ?? null}
         questions={questions}
+        isAdmin={user.isAdmin}
       />
     </div>
   );
