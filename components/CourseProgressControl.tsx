@@ -60,11 +60,16 @@ export default function CourseProgressControl({
 
   if (enrollment.status === "COMPLETED") {
     return (
-      <div style={{ display: "flex", alignItems: "center", gap: 10, fontSize: compact ? 12.5 : 13 }}>
-        <span style={{ color: "var(--green)", fontWeight: 600 }}>✓ Completed</span>
-        <a href={externalUrl} target="_blank" rel="noopener noreferrer">
-          Revisit on {sourceLabel} ↗
-        </a>
+      <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 10, fontSize: compact ? 12.5 : 13 }}>
+          <span style={{ color: "var(--green)", fontWeight: 600 }}>✓ Completed</span>
+          <a href={externalUrl} target="_blank" rel="noopener noreferrer">
+            Revisit on {sourceLabel} ↗
+          </a>
+        </div>
+        <div style={{ fontSize: 11, color: "var(--ink-faint)", lineHeight: 1.4 }}>
+          Retake the diagnostic to reflect what you&apos;ve learned since.
+        </div>
       </div>
     );
   }

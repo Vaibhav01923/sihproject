@@ -3,17 +3,21 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 
-const NAV = [
+type NavItem = { id: string; key: string; label: string; href: string };
+
+const MY_DEVELOPMENT: NavItem[] = [
   { id: "overview", key: "OV", label: "Overview", href: "/overview" },
   { id: "assessment", key: "AS", label: "Diagnostic", href: "/assessment" },
   { id: "gaps", key: "GA", label: "Gap analysis", href: "/gaps" },
   { id: "path", key: "LP", label: "Learning path", href: "/path" },
   { id: "catalog", key: "CT", label: "Course catalog", href: "/catalog" },
+];
+const AUTHORING_AI: NavItem[] = [
   { id: "studio", key: "QS", label: "Quiz studio", href: "/studio" },
   { id: "tutor", key: "AT", label: "AI tutor", href: "/tutor" },
 ];
-
-const ADMIN_NAV = { id: "admin", key: "AD", label: "Office analytics", href: "/admin" };
+const TEAM: NavItem[] = [{ id: "team", key: "TM", label: "My team", href: "/team" }];
+const ADMINISTRATION: NavItem[] = [{ id: "admin", key: "AD", label: "Office analytics", href: "/admin" }];
 
 function initials(name: string) {
   return name
@@ -25,10 +29,26 @@ function initials(name: string) {
     .toUpperCase();
 }
 
-export default function Sidebar({ name, role, isAdmin }: { name: string; role: string; isAdmin: boolean }) {
+export default function Sidebar({
+  name,
+  role,
+  isAdmin,
+  hasDirectReports,
+}: {
+  name: string;
+  role: string;
+  isAdmin: boolean;
+  hasDirectReports: boolean;
+}) {
   const pathname = usePathname();
   const router = useRouter();
-  const items = isAdmin ? [...NAV, ADMIN_NAV] : NAV;
+
+  const sections = [
+    { title: "My development", items: MY_DEVELOPMENT },
+    { title: "Authoring & AI", items: AUTHORING_AI },
+    ...(hasDirectReports ? [{ title: "Team", items: TEAM }] : []),
+    ...(isAdmin ? [{ title: "Administration", items: ADMINISTRATION }] : []),
+  ];
 
   async function logout() {
     await fetch("/api/auth/logout", { method: "POST" });
@@ -45,15 +65,20 @@ export default function Sidebar({ name, role, isAdmin }: { name: string; role: s
       </div>
 
       <nav className="sidebar-nav">
-        {items.map((item) => {
-          const active = pathname === item.href || pathname.startsWith(item.href + "/");
-          return (
-            <Link key={item.id} href={item.href} className={`nav-item${active ? " active" : ""}`}>
-              <span className="nav-key">{item.key}</span>
-              <span className="nav-label">{item.label}</span>
-            </Link>
-          );
-        })}
+        {sections.map((section) => (
+          <div key={section.title} className="nav-section">
+            <div className="nav-section-title">{section.title}</div>
+            {section.items.map((item) => {
+              const active = pathname === item.href || pathname.startsWith(item.href + "/");
+              return (
+                <Link key={item.id} href={item.href} className={`nav-item${active ? " active" : ""}`}>
+                  <span className="nav-key">{item.key}</span>
+                  <span className="nav-label">{item.label}</span>
+                </Link>
+              );
+            })}
+          </div>
+        ))}
       </nav>
 
       <div className="sidebar-footer">

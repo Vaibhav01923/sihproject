@@ -1,6 +1,5 @@
 import { getCurrentUser } from "@/lib/auth";
 import { getRankedCourses, getGapAnalysis } from "@/lib/recommend";
-import { db } from "@/lib/db";
 import PageHeader from "@/components/PageHeader";
 import CatalogClient from "./CatalogClient";
 
@@ -8,16 +7,14 @@ export default async function CatalogPage() {
   const user = await getCurrentUser();
   if (!user) return null;
 
-  const [courses, gaps, { data: enrollmentsData }] = await Promise.all([
-    getRankedCourses(user.id),
-    getGapAnalysis(user.id),
-    db.from("Enrollment").select("*").eq("userId", user.id),
-  ]);
-  const enrollments = enrollmentsData ?? [];
+  const gaps = await getGapAnalysis(user.id);
+  const courses = await getRankedCourses(user.id, gaps);
 
   const criticalDomainCodes = new Set(gaps.filter((g) => g.priority === "CRITICAL").map((g) => g.code));
+  // getRankedCourses already carries each course's enrollment status - no
+  // separate Enrollment query needed here.
   const enrollmentByCourseId = Object.fromEntries(
-    enrollments.map((e) => [e.courseId, { status: e.status, progressPct: e.progressPct }])
+    courses.filter((c) => c.enrollment).map((c) => [c.id, c.enrollment!])
   );
 
   return (

@@ -12,6 +12,8 @@ export const registerSchema = z.object({
   password: z.string().min(8, "Password must be at least 8 characters").max(200),
   role: z.enum(ROLES as [string, ...string[]]),
   office: z.enum(OFFICES),
+  // Not .uuid() - most existing User ids are Prisma-era cuids, not UUID-shaped.
+  reportingOfficerId: z.string().trim().min(1).max(64).nullable(),
 });
 
 export const loginSchema = z.object({

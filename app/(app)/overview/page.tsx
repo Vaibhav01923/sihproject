@@ -1,6 +1,6 @@
 import { getCurrentUser } from "@/lib/auth";
 import { getGapAnalysis, getRankedCourses } from "@/lib/recommend";
-import { getCompetencyIndex, getHoursCompleted, getKarmayogiCredits, getCohortBenchmark } from "@/lib/analytics";
+import { indexFromGaps, getHoursCompleted, getKarmayogiCredits, getCohortBenchmark } from "@/lib/analytics";
 import { PRIORITY_COLOR } from "@/lib/domains";
 import PageHeader from "@/components/PageHeader";
 
@@ -8,14 +8,14 @@ export default async function OverviewPage() {
   const user = await getCurrentUser();
   if (!user) return null;
 
-  const [gaps, courses, index, hours, credits, cohort] = await Promise.all([
-    getGapAnalysis(user.id),
-    getRankedCourses(user.id),
-    getCompetencyIndex(user.id),
+  const gaps = await getGapAnalysis(user.id);
+  const [courses, hours, credits, cohort] = await Promise.all([
+    getRankedCourses(user.id, gaps),
     getHoursCompleted(user.id),
     getKarmayogiCredits(user.id),
     getCohortBenchmark(user.id),
   ]);
+  const index = indexFromGaps(gaps);
 
   const criticalCount = gaps.filter((g) => g.priority === "CRITICAL").length;
   const criticalNames = gaps.filter((g) => g.priority === "CRITICAL").map((g) => g.name).join(", ");
@@ -90,7 +90,17 @@ export default async function OverviewPage() {
                     <span>{c.hours}h</span>
                   </div>
                   <div style={{ fontSize: 14.5, fontWeight: 600, marginTop: 6, lineHeight: 1.3 }}>{c.title}</div>
-                  <div style={{ fontSize: 12.5, color: "var(--ink-muted)", marginTop: 5 }}>{c.matchPct}% match to your gaps</div>
+                  {c.enrollment?.status === "COMPLETED" ? (
+                    <>
+                      <div style={{ fontSize: 12.5, color: "var(--green)", marginTop: 5, fontWeight: 600 }}>✓ Completed</div>
+                      <div style={{ fontSize: 11.5, color: "var(--ink-faint)", marginTop: 4, lineHeight: 1.4 }}>
+                        Your gap analysis is based on your last diagnostic — retake it to reflect what you&apos;ve learned
+                        since.
+                      </div>
+                    </>
+                  ) : (
+                    <div style={{ fontSize: 12.5, color: "var(--ink-muted)", marginTop: 5 }}>{c.matchPct}% match to your gaps</div>
+                  )}
                 </div>
               ))}
             </div>

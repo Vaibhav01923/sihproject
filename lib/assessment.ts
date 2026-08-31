@@ -33,14 +33,12 @@ export async function getOrCreateAttempt(userId: string): Promise<AssessmentAtte
  * scoring fair regardless of the path taken to get there.
  */
 export async function getNextQuestion(attemptId: string) {
-  const attempt: AssessmentAttemptRow = unwrap(
-    await db.from("AssessmentAttempt").select("*").eq("id", attemptId).single()
-  );
-  const { data: answersData } = await db
-    .from("AssessmentAnswer")
-    .select("*")
-    .eq("attemptId", attemptId)
-    .order("orderIndex", { ascending: true });
+  // Both fetches key off attemptId alone - independent, run concurrently.
+  const [attemptResult, { data: answersData }] = await Promise.all([
+    db.from("AssessmentAttempt").select("*").eq("id", attemptId).single(),
+    db.from("AssessmentAnswer").select("*").eq("attemptId", attemptId).order("orderIndex", { ascending: true }),
+  ]);
+  const attempt: AssessmentAttemptRow = unwrap(attemptResult);
   const answers = (answersData ?? []) as AssessmentAnswerRow[];
   const answeredCount = answers.length;
   if (answeredCount >= TOTAL_QUESTIONS) return null;
@@ -90,19 +88,14 @@ export async function getNextQuestion(attemptId: string) {
  * that slot across enough retakes.
  */
 async function pickQuestion(userId: string, attemptId: string, domainId: string, difficulty: Difficulty) {
-  const { data: candidatesData } = await db
-    .from("Question")
-    .select("*")
-    .eq("domainId", domainId)
-    .eq("difficulty", difficulty);
+  // Independent of each other - neither depends on the other's result.
+  const [{ data: candidatesData }, { data: priorAttempts }] = await Promise.all([
+    db.from("Question").select("*").eq("domainId", domainId).eq("difficulty", difficulty),
+    db.from("AssessmentAttempt").select("id").eq("userId", userId).neq("id", attemptId),
+  ]);
   const candidates = (candidatesData ?? []) as QuestionRow[];
   if (candidates.length === 0) return null;
 
-  const { data: priorAttempts } = await db
-    .from("AssessmentAttempt")
-    .select("id")
-    .eq("userId", userId)
-    .neq("id", attemptId);
   const priorAttemptIds = (priorAttempts ?? []).map((a) => a.id as string);
 
   let seenIds = new Set<string>();
@@ -120,11 +113,12 @@ async function pickQuestion(userId: string, attemptId: string, domainId: string,
 }
 
 export async function submitAnswer(attemptId: string, questionId: string, pickedIndex: number) {
-  const question: QuestionRow = unwrap(await db.from("Question").select("*").eq("id", questionId).single());
-  const { count } = await db
-    .from("AssessmentAnswer")
-    .select("*", { count: "exact", head: true })
-    .eq("attemptId", attemptId);
+  // Independent (keyed on questionId vs attemptId) - run concurrently.
+  const [questionResult, { count }] = await Promise.all([
+    db.from("Question").select("*").eq("id", questionId).single(),
+    db.from("AssessmentAnswer").select("*", { count: "exact", head: true }).eq("attemptId", attemptId),
+  ]);
+  const question: QuestionRow = unwrap(questionResult);
   const orderIndex = count ?? 0;
 
   const { error } = await db.from("AssessmentAnswer").insert({
@@ -173,16 +167,13 @@ export async function getCoverage(attemptId: string) {
 }
 
 async function completeAttempt(attemptId: string) {
-  const attempt: AssessmentAttemptRow = unwrap(
-    await db
-      .from("AssessmentAttempt")
-      .update({ status: "COMPLETED", completedAt: new Date().toISOString() })
-      .eq("id", attemptId)
-      .select()
-      .single()
-  );
-
-  const { data: answersData } = await db.from("AssessmentAnswer").select("*").eq("attemptId", attemptId);
+  // The answers fetch only needs attemptId (a parameter), not the update's
+  // return value, so both run concurrently.
+  const [attemptResult, { data: answersData }] = await Promise.all([
+    db.from("AssessmentAttempt").update({ status: "COMPLETED", completedAt: new Date().toISOString() }).eq("id", attemptId).select().single(),
+    db.from("AssessmentAnswer").select("*").eq("attemptId", attemptId),
+  ]);
+  const attempt: AssessmentAttemptRow = unwrap(attemptResult);
   const answers = (answersData ?? []) as AssessmentAnswerRow[];
   const byDomain = new Map<string, AssessmentAnswerRow[]>();
   for (const a of answers) {
@@ -191,16 +182,21 @@ async function completeAttempt(attemptId: string) {
     byDomain.set(a.domainId, list);
   }
 
-  await db.from("CompetencyScore").update({ isCurrent: false }).eq("userId", attempt.userId).eq("isCurrent", true);
-
   const newScores = Array.from(byDomain.entries()).map(([domainId, domainAnswers]) => {
     const earned = domainAnswers.reduce((sum, a) => sum + (a.correct ? TIER_WEIGHT[a.difficulty as Difficulty] : 0), 0);
     const ratio = earned / MAX_DOMAIN_WEIGHT;
     const level = Math.min(5, Math.max(1, Math.round(1 + ratio * 4)));
     return { id: newId(), userId: attempt.userId, domainId, attemptId, level, ratio, isCurrent: true };
   });
-  const { error } = await db.from("CompetencyScore").insert(newScores);
-  if (error) throw new Error(error.message);
+
+  // These touch disjoint rows (old rows being marked stale vs. brand-new
+  // rows being inserted) - safe to run concurrently.
+  const [{ error: staleError }, { error: insertError }] = await Promise.all([
+    db.from("CompetencyScore").update({ isCurrent: false }).eq("userId", attempt.userId).eq("isCurrent", true),
+    db.from("CompetencyScore").insert(newScores),
+  ]);
+  if (staleError) throw new Error(staleError.message);
+  if (insertError) throw new Error(insertError.message);
 
   await generateLearningPath(attempt.userId, attemptId);
 }

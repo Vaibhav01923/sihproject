@@ -1,13 +1,18 @@
 import { db } from "./db";
 import { DOMAINS, ROLE_BENCHMARKS, OFFICES, priorityForGap } from "./domains";
-import { getGapAnalysis } from "./recommend";
+import { getGapAnalysis, type DomainGap } from "./recommend";
 import type { CompetencyDomainRow } from "./schema";
 
-/** Mean current level (1-5) across all domains, scaled to 0-100. */
-export async function getCompetencyIndex(userId: string) {
-  const gaps = await getGapAnalysis(userId);
+/** Mean current level (1-5) across all domains, scaled to 0-100. Pure/sync -
+ * pass in gaps you've already fetched instead of calling getCompetencyIndex,
+ * which re-fetches them, if you already have them in hand. */
+export function indexFromGaps(gaps: DomainGap[]) {
   const mean = gaps.reduce((s, g) => s + g.current, 0) / gaps.length;
   return Math.round((mean / 5) * 100);
+}
+
+export async function getCompetencyIndex(userId: string) {
+  return indexFromGaps(await getGapAnalysis(userId));
 }
 
 export async function getHoursCompleted(userId: string) {
