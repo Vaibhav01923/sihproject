@@ -2,7 +2,7 @@
 
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import PracticeQuiz from "./PracticeQuiz";
+import PracticeQuiz from "@/components/PracticeQuiz";
 
 type Doc = { id: string; filename: string; pageCount: number | null; conceptCount: number | null; status: string };
 type Q = {

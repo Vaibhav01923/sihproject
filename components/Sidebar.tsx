@@ -14,6 +14,7 @@ const MY_DEVELOPMENT: NavItem[] = [
 ];
 const AUTHORING_AI: NavItem[] = [
   { id: "studio", key: "QS", label: "Quiz studio", href: "/studio" },
+  { id: "quizzes", key: "PQ", label: "Published quizzes", href: "/quizzes" },
   { id: "tutor", key: "AT", label: "AI tutor", href: "/tutor" },
 ];
 const TEAM: NavItem[] = [{ id: "team", key: "TM", label: "My team", href: "/team" }];

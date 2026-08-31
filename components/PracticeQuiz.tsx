@@ -15,12 +15,12 @@ type Q = {
 };
 
 /**
- * Personal self-test with the reviewed questions from one document -
- * entirely client-side (the caller already has the full question set),
- * immediate right/wrong feedback per question, and a score at the end.
- * Deliberately not persisted anywhere: this is a study aid for whoever
- * generated the quiz, not an official record (that's what Publish to
- * Karmayogi is for, gated to admins separately).
+ * Self-test with a fixed set of reviewed questions - entirely
+ * client-side (the caller already has the full question set), immediate
+ * right/wrong feedback per question, and a score at the end. Deliberately
+ * not persisted anywhere: this is a personal study aid, not an official
+ * record. Used both for a document's own author (Quiz Studio's "Practice
+ * quiz") and for anyone practicing a published quiz from /quizzes.
  */
 export default function PracticeQuiz({ questions, onExit }: { questions: Q[]; onExit: () => void }) {
   const [index, setIndex] = useState(0);
@@ -32,10 +32,10 @@ export default function PracticeQuiz({ questions, onExit }: { questions: Q[]; on
   if (questions.length === 0) {
     return (
       <div className="empty-state">
-        Approve at least one question before you can practice this quiz.
+        No questions available to practice right now.
         <div style={{ marginTop: 14 }}>
           <button className="btn btn-outline btn-sm" onClick={onExit}>
-            Back to review
+            Back
           </button>
         </div>
       </div>
@@ -85,7 +85,7 @@ export default function PracticeQuiz({ questions, onExit }: { questions: Q[]; on
             Practice again
           </button>
           <button className="btn btn-outline" onClick={onExit}>
-            Back to review
+            Back
           </button>
         </div>
       </div>
