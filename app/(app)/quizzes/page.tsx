@@ -78,7 +78,7 @@ export default async function QuizzesPage({ searchParams }: { searchParams: Prom
       <PageHeader
         crumb="Authoring · AI"
         heading="Published quizzes"
-        subheading="Reviewed quizzes published by anyone in your organisation - practice any of them yourself."
+        subheading="Quizzes published by anyone in your organisation - practice any of them yourself."
       />
       <QuizzesClient quizzes={quizzes} selectedDocId={selectedDocId ?? null} practiceQuestions={practiceQuestions} />
     </div>
