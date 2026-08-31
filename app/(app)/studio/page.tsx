@@ -46,7 +46,7 @@ export default async function StudioPage({ searchParams }: { searchParams: Promi
       <PageHeader
         crumb="Authoring · AI"
         heading="Quiz studio"
-        subheading="Upload departmental material and generate reviewed MCQs mapped to competencies."
+        subheading="Upload departmental material and generate MCQs mapped to competencies."
       />
       <StudioClient
         documents={documents.map((d) => ({
