@@ -3,6 +3,7 @@ import { getGapAnalysis, getRankedCourses } from "@/lib/recommend";
 import { indexFromGaps, getHoursCompleted, getKarmayogiCredits, getCohortBenchmark } from "@/lib/analytics";
 import { PRIORITY_COLOR } from "@/lib/domains";
 import PageHeader from "@/components/PageHeader";
+import CourseProgressControl from "@/components/CourseProgressControl";
 
 export default async function OverviewPage() {
   const user = await getCurrentUser();
@@ -90,17 +91,10 @@ export default async function OverviewPage() {
                     <span>{c.hours}h</span>
                   </div>
                   <div style={{ fontSize: 14.5, fontWeight: 600, marginTop: 6, lineHeight: 1.3 }}>{c.title}</div>
-                  {c.enrollment?.status === "COMPLETED" ? (
-                    <>
-                      <div style={{ fontSize: 12.5, color: "var(--green)", marginTop: 5, fontWeight: 600 }}>✓ Completed</div>
-                      <div style={{ fontSize: 11.5, color: "var(--ink-faint)", marginTop: 4, lineHeight: 1.4 }}>
-                        Your gap analysis is based on your last diagnostic — retake it to reflect what you&apos;ve learned
-                        since.
-                      </div>
-                    </>
-                  ) : (
-                    <div style={{ fontSize: 12.5, color: "var(--ink-muted)", marginTop: 5 }}>{c.matchPct}% match to your gaps</div>
-                  )}
+                  <div style={{ fontSize: 12.5, color: "var(--ink-muted)", marginTop: 5 }}>{c.matchPct}% match to your gaps</div>
+                  <div style={{ marginTop: 10, paddingTop: 10, borderTop: "1px solid #f1f2ed" }}>
+                    <CourseProgressControl courseId={c.id} source={c.source} enrollment={c.enrollment} compact />
+                  </div>
                 </div>
               ))}
             </div>
