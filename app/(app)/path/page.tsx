@@ -1,5 +1,5 @@
 import { getCurrentUser } from "@/lib/auth";
-import { getLatestLearningPath, generateLearningPath } from "@/lib/recommend";
+import { getLatestLearningPath, generateLearningPath, getGapAnalysis, getRankedCourses, getRepeatGapDomains } from "@/lib/recommend";
 import { getPathProjection } from "@/lib/analytics";
 import { db } from "@/lib/db";
 import PageHeader from "@/components/PageHeader";
@@ -55,16 +55,37 @@ export default async function PathPage() {
 
 async function PathBody({ userId, path }: { userId: string; path: NonNullable<Awaited<ReturnType<typeof getLatestLearningPath>>> }) {
   const courseIds = path.items.map((i) => i.courseId);
-  const [projection, { data: enrollmentsData }] = await Promise.all([
+  const [projection, { data: enrollmentsData }, gaps] = await Promise.all([
     getPathProjection(userId, courseIds),
     db.from("Enrollment").select("*").eq("userId", userId).in("courseId", courseIds),
+    getGapAnalysis(userId),
   ]);
   const enrollments = enrollmentsData ?? [];
   const enrollmentByCourseId = Object.fromEntries(enrollments.map((e) => [e.courseId, { status: e.status, progressPct: e.progressPct }]));
+  const rankedCourses = await getRankedCourses(userId, gaps);
+  const repeatGaps = getRepeatGapDomains(gaps, rankedCourses);
 
   return (
-    <div style={{ display: "grid", gridTemplateColumns: "1fr 288px", gap: 20, alignItems: "start" }}>
-      <section style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+    <div>
+      {repeatGaps.length > 0 && (
+        <div
+          className="card"
+          style={{
+            padding: "14px 18px",
+            marginBottom: 16,
+            borderLeft: "3px solid var(--amber)",
+            fontSize: 13.5,
+            lineHeight: 1.5,
+          }}
+        >
+          <strong>Still showing a gap after completing the course:</strong> {repeatGaps.map((g) => g.name).join(", ")}
+          . These courses are still listed below because they&apos;re still the best match - but if you&apos;ve
+          already done them once, consider revisiting the material rather than just re-enrolling, and retake the
+          diagnostic once you have.
+        </div>
+      )}
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 288px", gap: 20, alignItems: "start" }}>
+        <section style={{ display: "flex", flexDirection: "column", gap: 12 }}>
         {path.items.map((p) => (
           <div key={p.id} className="card" style={{ padding: "18px 20px", display: "flex", gap: 18, alignItems: "flex-start" }}>
             <div style={{ flex: "0 0 44px", textAlign: "center" }}>
@@ -131,7 +152,8 @@ async function PathBody({ userId, path }: { userId: string; path: NonNullable<Aw
           This path refreshes automatically the next time you complete the diagnostic. Completions and credits post
           automatically to your Karmayogi profile.
         </div>
-      </aside>
+        </aside>
+      </div>
     </div>
   );
 }

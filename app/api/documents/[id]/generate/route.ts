@@ -5,6 +5,8 @@ import { requireUser, AuthError } from "@/lib/auth";
 import { generateQuestions } from "@/lib/llm/quizgen";
 import type { DocumentRow } from "@/lib/schema";
 
+export const maxDuration = 60; // LLM question generation can take a while for a larger count
+
 export async function POST(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const user = await requireUser();
@@ -27,6 +29,14 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
         { status: 422 }
       );
     }
+
+    // Each "Generate questions" click produces one fresh set for this
+    // document, not an ever-growing pile - only after generation actually
+    // succeeds, so a failed generation never wipes out a working batch.
+    // Already-published questions are left alone: they're live/public and
+    // shouldn't disappear out from under Published Quizzes.
+    const { error: clearError } = await db.from("GeneratedQuestion").delete().eq("documentId", document.id).neq("status", "PUBLISHED");
+    if (clearError) throw new Error(clearError.message);
 
     const { error } = await db.from("GeneratedQuestion").insert(
       questions.map((q) => ({

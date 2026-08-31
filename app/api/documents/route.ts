@@ -5,6 +5,7 @@ import { requireUser, AuthError } from "@/lib/auth";
 import { estimateConceptCount } from "@/lib/llm/quizgen";
 
 export const runtime = "nodejs";
+export const maxDuration = 60; // pdf-parse on a large PDF can genuinely take a while
 
 const MAX_SIZE_BYTES = 15 * 1024 * 1024; // 15MB - a prototype limit, not a platform one
 

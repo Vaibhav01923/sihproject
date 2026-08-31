@@ -30,7 +30,3 @@ export const answerSchema = z.object({
 export const chatSchema = z.object({
   message: z.string().trim().min(1).max(2000),
 });
-
-export const questionReviewSchema = z.object({
-  status: z.enum(["APPROVED", "REJECTED", "DRAFT"]),
-});

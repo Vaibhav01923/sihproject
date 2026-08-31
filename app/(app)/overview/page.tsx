@@ -1,5 +1,5 @@
 import { getCurrentUser } from "@/lib/auth";
-import { getGapAnalysis, getRankedCourses } from "@/lib/recommend";
+import { getGapAnalysis, getRankedCourses, getRepeatGapDomains } from "@/lib/recommend";
 import { indexFromGaps, getHoursCompleted, getKarmayogiCredits, getCohortBenchmark } from "@/lib/analytics";
 import { PRIORITY_COLOR } from "@/lib/domains";
 import PageHeader from "@/components/PageHeader";
@@ -17,6 +17,7 @@ export default async function OverviewPage() {
     getCohortBenchmark(user.id),
   ]);
   const index = indexFromGaps(gaps);
+  const repeatGaps = getRepeatGapDomains(gaps, courses);
 
   const criticalCount = gaps.filter((g) => g.priority === "CRITICAL").length;
   const criticalNames = gaps.filter((g) => g.priority === "CRITICAL").map((g) => g.name).join(", ");
@@ -36,6 +37,32 @@ export default async function OverviewPage() {
         heading={`Good morning, ${firstName}`}
         subheading="Your competency standing, live gaps, and what the system suggests you take next."
       />
+
+      {repeatGaps.length > 0 && (
+        <div
+          className="card"
+          style={{
+            padding: "14px 18px",
+            marginBottom: 16,
+            borderLeft: "3px solid var(--amber)",
+            display: "flex",
+            alignItems: "baseline",
+            justifyContent: "space-between",
+            gap: 16,
+            flexWrap: "wrap",
+          }}
+        >
+          <div style={{ fontSize: 13.5, lineHeight: 1.5 }}>
+            <strong>Still showing a gap after completing the course:</strong>{" "}
+            {repeatGaps.map((g) => g.name).join(", ")}. Finishing a course doesn&apos;t update your tested level by
+            itself - retake the diagnostic to reflect what you&apos;ve learned, or revisit the material if the gap
+            persists.
+          </div>
+          <a href="/assessment" className="btn btn-outline btn-sm" style={{ flex: "0 0 auto" }}>
+            Retake diagnostic
+          </a>
+        </div>
+      )}
 
       <div className="tiles-grid">
         {tiles.map((t) => (

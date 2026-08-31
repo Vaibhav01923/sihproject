@@ -130,6 +130,20 @@ export async function getRankedCourses(
     .sort((a, b) => b.matchPct - a.matchPct);
 }
 
+/** Gaps that are still CRITICAL/HIGH despite the user having already
+ * completed a course whose primary domain is that gap - i.e. cases where
+ * "take the recommended course" was already tried and the next diagnostic
+ * still shows the same gap. Completing a course doesn't move your tested
+ * level on its own (only retaking the diagnostic does), so this is the one
+ * place that distinguishes "never attempted" from "attempted and still
+ * short" for the UI to say something different about. */
+export function getRepeatGapDomains(gaps: DomainGap[], courses: RankedCourse[]): DomainGap[] {
+  const completedDomainCodes = new Set(
+    courses.filter((c) => c.enrollment?.status === "COMPLETED").map((c) => c.primaryDomainCode)
+  );
+  return gaps.filter((g) => (g.priority === "CRITICAL" || g.priority === "HIGH") && completedDomainCodes.has(g.code));
+}
+
 /** Greedy set-cover: repeatedly take the highest-match course that still
  * covers an unclosed CRITICAL/HIGH gap, until every such gap is covered or
  * the pool is exhausted, then lay the picks out sequentially by week using

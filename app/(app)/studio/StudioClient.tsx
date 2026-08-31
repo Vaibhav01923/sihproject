@@ -55,15 +55,26 @@ export default function StudioClient({
       const fd = new FormData();
       fd.append("file", file);
       const res = await fetch("/api/documents", { method: "POST", body: fd });
-      const data = await res.json();
+      let data: { id?: string; error?: string };
+      try {
+        data = await res.json();
+      } catch {
+        // A non-JSON body (e.g. a gateway timeout page) means the request
+        // never made it to our own error handling - surface that plainly
+        // instead of failing silently, which is what used to happen here.
+        throw new Error(`The server didn't respond properly (status ${res.status}) - the file may be too large or slow to parse. Try a smaller file.`);
+      }
       if (!res.ok) {
         setUploadError(data.error ?? "Upload failed");
         return;
       }
       router.push(`/studio?doc=${data.id}`);
       router.refresh();
+    } catch (err) {
+      setUploadError(err instanceof Error ? err.message : "Upload failed - check your connection and try again.");
     } finally {
       setUploading(false);
+      if (fileInput.current) fileInput.current.value = "";
     }
   }
 
@@ -88,15 +99,6 @@ export default function StudioClient({
     }
   }
 
-  async function review(id: string, status: "APPROVED" | "REJECTED") {
-    await fetch(`/api/questions/${id}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ status }),
-    });
-    router.refresh();
-  }
-
   async function publish() {
     if (!selected) return;
     setPublishing(true);
@@ -118,8 +120,7 @@ export default function StudioClient({
   }
 
   function exportQti() {
-    const approved = questions.filter((q) => q.status === "APPROVED" || q.status === "PUBLISHED");
-    const items = approved
+    const items = questions
       .map(
         (q, i) => `  <assessmentItem identifier="Q${i + 1}" title="${escapeXml(q.text.slice(0, 40))}" adaptive="false" timeDependent="false">
     <responseDeclaration identifier="RESPONSE" cardinality="single" baseType="identifier">
@@ -145,9 +146,8 @@ ${q.options.map((o, oi) => `        <simpleChoice identifier="${"ABCD"[oi]}">${e
     URL.revokeObjectURL(url);
   }
 
-  const approvedCount = questions.filter((q) => q.status === "APPROVED").length;
   const publishedCount = questions.filter((q) => q.status === "PUBLISHED").length;
-  const practiceQuestions = questions.filter((q) => q.status === "APPROVED" || q.status === "PUBLISHED");
+  const pendingCount = questions.length - publishedCount;
 
   return (
     <>
@@ -178,15 +178,35 @@ ${q.options.map((o, oi) => `        <simpleChoice identifier="${"ABCD"[oi]}">${e
           Source material
         </h2>
         <div
-          onClick={() => fileInput.current?.click()}
-          style={{ border: "1px dashed #c4c8bd", borderRadius: 6, padding: "20px 16px", textAlign: "center", background: "#fafbf8", cursor: "pointer" }}
+          onClick={() => !uploading && fileInput.current?.click()}
+          style={{
+            border: "1px dashed #c4c8bd",
+            borderRadius: 6,
+            padding: "20px 16px",
+            textAlign: "center",
+            background: "#fafbf8",
+            cursor: uploading ? "default" : "pointer",
+            opacity: uploading ? 0.75 : 1,
+          }}
         >
-          <div className="mono" style={{ fontSize: 10.5, color: "#8b8f86", letterSpacing: "0.08em", textTransform: "uppercase" }}>
-            {uploading ? "Uploading…" : "Click to upload PDF / TXT"}
-          </div>
-          <div style={{ fontSize: 13, color: "var(--ink-muted)", marginTop: 8, lineHeight: 1.5 }}>
-            Circulars, instruction manuals, training notes
-          </div>
+          {uploading ? (
+            <>
+              <div className="spinner" style={{ margin: "0 auto 10px" }} />
+              <div className="mono" style={{ fontSize: 10.5, color: "#8b8f86", letterSpacing: "0.08em", textTransform: "uppercase" }}>
+                Uploading &amp; parsing…
+              </div>
+              <div style={{ fontSize: 12, color: "var(--ink-muted)", marginTop: 6 }}>Large PDFs can take a little while.</div>
+            </>
+          ) : (
+            <>
+              <div className="mono" style={{ fontSize: 10.5, color: "#8b8f86", letterSpacing: "0.08em", textTransform: "uppercase" }}>
+                Click to upload PDF / TXT
+              </div>
+              <div style={{ fontSize: 13, color: "var(--ink-muted)", marginTop: 8, lineHeight: 1.5 }}>
+                Circulars, instruction manuals, training notes
+              </div>
+            </>
+          )}
         </div>
         <input
           ref={fileInput}
@@ -194,6 +214,7 @@ ${q.options.map((o, oi) => `        <simpleChoice identifier="${"ABCD"[oi]}">${e
           accept=".pdf,.txt,application/pdf,text/plain"
           style={{ display: "none" }}
           onChange={upload}
+          disabled={uploading}
         />
         {uploadError && <div className="form-error" style={{ marginTop: 12, marginBottom: 0 }}>{uploadError}</div>}
 
@@ -248,6 +269,12 @@ ${q.options.map((o, oi) => `        <simpleChoice identifier="${"ABCD"[oi]}">${e
                 </span>
               </div>
             </div>
+            {questions.length > 0 && (
+              <p style={{ fontSize: 11.5, color: "var(--ink-faint)", margin: "10px 0 0", lineHeight: 1.4 }}>
+                Generating again replaces the current unpublished set for this document - already-published questions
+                stay untouched.
+              </p>
+            )}
             {genError && <div className="form-error" style={{ marginTop: 12, marginBottom: 0 }}>{genError}</div>}
             <button className="btn btn-primary btn-block" style={{ marginTop: 20 }} onClick={generate} disabled={generating}>
               {generating ? "Generating…" : "Generate questions"}
@@ -267,34 +294,29 @@ ${q.options.map((o, oi) => `        <simpleChoice identifier="${"ABCD"[oi]}">${e
         ) : questions.length === 0 ? (
           <div className="empty-state">No questions generated yet for this document.</div>
         ) : practicing ? (
-          <PracticeQuiz questions={practiceQuestions} onExit={() => setPracticing(false)} />
+          <PracticeQuiz questions={questions} onExit={() => setPracticing(false)} />
         ) : (
           <div>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 14 }}>
               <div style={{ fontSize: 13.5, color: "var(--ink-muted)" }}>
-                {questions.length} questions · {approvedCount} approved · {publishedCount} published
+                {questions.length} questions · {publishedCount} published
               </div>
               <div style={{ display: "flex", gap: 9 }}>
-                <button
-                  className="btn btn-primary btn-sm"
-                  onClick={() => setPracticing(true)}
-                  disabled={practiceQuestions.length === 0}
-                  title={practiceQuestions.length === 0 ? "Approve at least one question first" : undefined}
-                >
+                <button className="btn btn-primary btn-sm" onClick={() => setPracticing(true)}>
                   Practice quiz
                 </button>
-                <button className="btn btn-outline btn-sm" onClick={exportQti} disabled={approvedCount + publishedCount === 0}>
+                <button className="btn btn-outline btn-sm" onClick={exportQti}>
                   Export QTI
                 </button>
                 <button
                   className="btn btn-dark btn-sm"
                   onClick={publish}
-                  disabled={publishing || approvedCount === 0 || !isAdmin}
+                  disabled={publishing || pendingCount === 0 || !isAdmin}
                   title={
                     !isAdmin
                       ? "Only an administrator can publish to iGOT Karmayogi"
-                      : approvedCount === 0
-                        ? "Nothing waiting to publish - approve a draft question first"
+                      : pendingCount === 0
+                        ? "Everything here is already published"
                         : undefined
                   }
                 >
@@ -304,11 +326,11 @@ ${q.options.map((o, oi) => `        <simpleChoice identifier="${"ABCD"[oi]}">${e
             </div>
             {!isAdmin ? (
               <p style={{ fontSize: 12, color: "var(--ink-faint)", margin: "-6px 0 14px", textAlign: "right" }}>
-                Publishing to iGOT Karmayogi is restricted to administrators.
+                Publishing to iGOT Karmayogi is restricted to administrators - practicing is open to everyone.
               </p>
-            ) : approvedCount === 0 && publishedCount > 0 ? (
+            ) : pendingCount === 0 ? (
               <p style={{ fontSize: 12, color: "var(--ink-faint)", margin: "-6px 0 14px", textAlign: "right" }}>
-                Everything approved so far is already published - approve a draft question below to publish more.
+                Everything here is already published.
               </p>
             ) : null}
             <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
@@ -349,18 +371,8 @@ ${q.options.map((o, oi) => `        <simpleChoice identifier="${"ABCD"[oi]}">${e
                       </div>
                     ))}
                   </div>
-                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginTop: 13, paddingTop: 12, borderTop: "1px solid #f1f2ed" }}>
+                  <div style={{ marginTop: 13, paddingTop: 12, borderTop: "1px solid #f1f2ed" }}>
                     <span style={{ fontSize: 12.5, color: "var(--ink-muted)" }}>Maps to: {q.domainName ?? "General"}</span>
-                    {q.status === "DRAFT" && (
-                      <div style={{ display: "flex", gap: 14, fontSize: 13, fontWeight: 600 }}>
-                        <span style={{ color: "var(--ink-faint)", cursor: "pointer" }} onClick={() => review(q.id, "REJECTED")}>
-                          Reject
-                        </span>
-                        <span style={{ color: "var(--green)", cursor: "pointer" }} onClick={() => review(q.id, "APPROVED")}>
-                          Approve
-                        </span>
-                      </div>
-                    )}
                   </div>
                 </div>
               ))}
@@ -374,11 +386,10 @@ ${q.options.map((o, oi) => `        <simpleChoice identifier="${"ABCD"[oi]}">${e
 }
 
 function StatusBadge({ status }: { status: string }) {
-  if (status === "DRAFT") return null;
-  const color = status === "PUBLISHED" ? "var(--blue)" : status === "APPROVED" ? "var(--green)" : "var(--red)";
+  if (status !== "PUBLISHED") return null;
   return (
-    <span style={{ color, fontWeight: 600 }}>
-      · {status.toLowerCase()}
+    <span style={{ color: "var(--blue)", fontWeight: 600 }}>
+      · published
     </span>
   );
 }
