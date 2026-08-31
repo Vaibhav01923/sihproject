@@ -74,7 +74,6 @@ export default function CourseProgressControl({
     );
   }
 
-  const presets = [25, 50, 75];
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
       <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
@@ -85,14 +84,7 @@ export default function CourseProgressControl({
           {enrollment.progressPct}%
         </span>
       </div>
-      <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
-        {presets
-          .filter((p) => p > enrollment.progressPct)
-          .map((p) => (
-            <button key={p} className="btn btn-outline btn-sm" style={{ padding: "4px 10px", fontSize: 12 }} onClick={() => setProgress(p)} disabled={!!busy}>
-              {busy === String(p) ? "…" : `Mark ${p}%`}
-            </button>
-          ))}
+      <div>
         <button className="btn btn-dark btn-sm" style={{ padding: "4px 10px", fontSize: 12 }} onClick={() => setProgress(100)} disabled={!!busy}>
           {busy === "100" ? "…" : "Mark complete"}
         </button>
