@@ -290,17 +290,27 @@ ${q.options.map((o, oi) => `        <simpleChoice identifier="${"ABCD"[oi]}">${e
                   className="btn btn-dark btn-sm"
                   onClick={publish}
                   disabled={publishing || approvedCount === 0 || !isAdmin}
-                  title={isAdmin ? undefined : "Only an administrator can publish to iGOT Karmayogi"}
+                  title={
+                    !isAdmin
+                      ? "Only an administrator can publish to iGOT Karmayogi"
+                      : approvedCount === 0
+                        ? "Nothing waiting to publish - approve a draft question first"
+                        : undefined
+                  }
                 >
                   {publishing ? "Publishing…" : "Publish to Karmayogi"}
                 </button>
               </div>
             </div>
-            {!isAdmin && (
+            {!isAdmin ? (
               <p style={{ fontSize: 12, color: "var(--ink-faint)", margin: "-6px 0 14px", textAlign: "right" }}>
                 Publishing to iGOT Karmayogi is restricted to administrators.
               </p>
-            )}
+            ) : approvedCount === 0 && publishedCount > 0 ? (
+              <p style={{ fontSize: 12, color: "var(--ink-faint)", margin: "-6px 0 14px", textAlign: "right" }}>
+                Everything approved so far is already published - approve a draft question below to publish more.
+              </p>
+            ) : null}
             <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
               {questions.map((q) => (
                 <div key={q.id} className="card rise" style={{ padding: "18px 20px" }}>
