@@ -1,9 +1,8 @@
 import { getCurrentUser } from "@/lib/auth";
-import { getLatestLearningPath } from "@/lib/recommend";
+import { getLatestLearningPath, generateLearningPath } from "@/lib/recommend";
 import { getPathProjection } from "@/lib/analytics";
 import { db } from "@/lib/db";
 import PageHeader from "@/components/PageHeader";
-import GeneratePathButton from "./GeneratePathButton";
 import CourseProgressControl from "@/components/CourseProgressControl";
 
 export default async function PathPage() {
@@ -17,7 +16,16 @@ export default async function PathPage() {
     .eq("status", "COMPLETED")
     .limit(1)
     .maybeSingle();
-  const path = await getLatestLearningPath(user.id);
+  let path = await getLatestLearningPath(user.id);
+
+  // completeAttempt() already generates a path automatically the moment a
+  // diagnostic finishes - there's no manual "regenerate" action anymore.
+  // This only fires as a self-heal for a completed assessment that somehow
+  // has no path yet (shouldn't happen in normal use, but leaves nobody stuck).
+  if (hasCompletedAssessment && !path) {
+    await generateLearningPath(user.id);
+    path = await getLatestLearningPath(user.id);
+  }
 
   return (
     <div>
@@ -36,10 +44,7 @@ export default async function PathPage() {
         </div>
       ) : !path ? (
         <div className="empty-state">
-          <p style={{ margin: 0 }}>No path generated yet.</p>
-          <div style={{ marginTop: 16 }}>
-            <GeneratePathButton label="Generate my path" />
-          </div>
+          <p style={{ margin: 0 }}>Couldn&apos;t generate a path right now - try again shortly.</p>
         </div>
       ) : (
         <PathBody userId={user.id} path={path} />
@@ -122,11 +127,9 @@ async function PathBody({ userId, path }: { userId: string; path: NonNullable<Aw
             </div>
           ))}
         </div>
-        <div style={{ marginTop: 18 }}>
-          <GeneratePathButton />
-        </div>
-        <div style={{ marginTop: 14, fontSize: 12.5, color: "var(--ink-muted)", lineHeight: 1.55 }}>
-          Completions and credits post automatically to your Karmayogi profile.
+        <div style={{ marginTop: 18, paddingTop: 14, borderTop: "1px solid #eceee8", fontSize: 12.5, color: "var(--ink-muted)", lineHeight: 1.55 }}>
+          This path refreshes automatically the next time you complete the diagnostic. Completions and credits post
+          automatically to your Karmayogi profile.
         </div>
       </aside>
     </div>
