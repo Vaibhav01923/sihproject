@@ -2,6 +2,7 @@
 
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import PracticeQuiz from "./PracticeQuiz";
 
 type Doc = { id: string; filename: string; pageCount: number | null; conceptCount: number | null; status: string };
 type Q = {
@@ -36,6 +37,7 @@ export default function StudioClient({
   const [count, setCount] = useState(8);
   const [publishing, setPublishing] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
+  const [practicing, setPracticing] = useState(false);
 
   function showToast(message: string) {
     setToast(message);
@@ -145,6 +147,7 @@ ${q.options.map((o, oi) => `        <simpleChoice identifier="${"ABCD"[oi]}">${e
 
   const approvedCount = questions.filter((q) => q.status === "APPROVED").length;
   const publishedCount = questions.filter((q) => q.status === "PUBLISHED").length;
+  const practiceQuestions = questions.filter((q) => q.status === "APPROVED" || q.status === "PUBLISHED");
 
   return (
     <>
@@ -263,6 +266,8 @@ ${q.options.map((o, oi) => `        <simpleChoice identifier="${"ABCD"[oi]}">${e
           </div>
         ) : questions.length === 0 ? (
           <div className="empty-state">No questions generated yet for this document.</div>
+        ) : practicing ? (
+          <PracticeQuiz questions={practiceQuestions} onExit={() => setPracticing(false)} />
         ) : (
           <div>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 14 }}>
@@ -270,6 +275,14 @@ ${q.options.map((o, oi) => `        <simpleChoice identifier="${"ABCD"[oi]}">${e
                 {questions.length} questions · {approvedCount} approved · {publishedCount} published
               </div>
               <div style={{ display: "flex", gap: 9 }}>
+                <button
+                  className="btn btn-primary btn-sm"
+                  onClick={() => setPracticing(true)}
+                  disabled={practiceQuestions.length === 0}
+                  title={practiceQuestions.length === 0 ? "Approve at least one question first" : undefined}
+                >
+                  Practice quiz
+                </button>
                 <button className="btn btn-outline btn-sm" onClick={exportQti} disabled={approvedCount + publishedCount === 0}>
                   Export QTI
                 </button>
