@@ -59,6 +59,7 @@ export type RankedCourse = {
   mandatory: boolean;
   matchPct: number;
   primaryDomainCode: string;
+  primaryDomainName: string;
   enrollment: { status: string; progressPct: number } | null;
 };
 
@@ -122,6 +123,7 @@ export async function getRankedCourses(
         mandatory: course.mandatory,
         matchPct,
         primaryDomainCode: primary?.code ?? "",
+        primaryDomainName: primary?.name ?? "",
         enrollment: enrollmentByCourseId.get(course.id) ?? null,
       };
     })

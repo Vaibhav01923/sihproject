@@ -50,18 +50,20 @@ export default function CatalogClient({
           return (
             <div key={c.id} className="card" style={{ padding: "18px 19px", display: "flex", flexDirection: "column", gap: 10 }}>
               <div
+                className="mono"
                 style={{
-                  height: 74,
-                  borderRadius: 5,
-                  background: "#f1f2ed repeating-linear-gradient(135deg, #e6e8e1 0 6px, transparent 6px 12px)",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
+                  alignSelf: "flex-start",
+                  fontSize: 10,
+                  letterSpacing: "0.06em",
+                  textTransform: "uppercase",
+                  color: "#6a6f66",
+                  background: "#f1f2ed",
+                  border: "1px solid var(--border)",
+                  borderRadius: 4,
+                  padding: "3px 8px",
                 }}
               >
-                <span className="mono" style={{ fontSize: 10, letterSpacing: "0.08em", color: "#8b8f86", textTransform: "uppercase" }}>
-                  {c.primaryDomainCode || "course"}
-                </span>
+                {c.primaryDomainName || "General"}
               </div>
               <div className="mono" style={{ display: "flex", alignItems: "center", gap: 7, fontSize: 10, letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--ink-faint)" }}>
                 <span>{c.source === "IGOT_KARMAYOGI" ? "iGOT Karmayogi" : "MoSPI NSTA"}</span>
